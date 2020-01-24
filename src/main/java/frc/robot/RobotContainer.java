@@ -23,9 +23,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   Joystick joy=new Joystick(0);
   // The robot's subsystems and commands are defined here...
-  private final ChassisSubsystem m_exampleSubsystem = new ChassisSubsystem();
+  private final ChassisSubsystem chassis = new ChassisSubsystem();
 
-  private final DriveWithJoystick m_autoCommand = new DriveWithJoystick(m_exampleSubsystem,joy);
+  private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis,joy);
 
 
 
@@ -35,6 +35,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    chassis.setDefaultCommand(driveWithJoystick);
   }
 
   /**
@@ -54,6 +56,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return driveWithJoystick;
   }
 }
