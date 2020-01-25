@@ -1,5 +1,5 @@
+package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,8 +22,9 @@ public class HookSubsystem extends PIDSubsystem {
     }
 
     @Override
-    protected double getMeasurement() {
+    public double getMeasurement() {
         return hookController.getSelectedSensorPosition();
+
     }
 
 }
