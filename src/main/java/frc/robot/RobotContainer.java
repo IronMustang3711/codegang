@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.subsystems.ChassisSubsystem;
 import frc.robot.subsystems.HookSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -30,6 +31,7 @@ public class RobotContainer {
 
   private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
   private final HookSubsystem hook = new HookSubsystem();
+  private final IntakeSubsystem intake = new IntakeSubsystem();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -50,6 +52,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new JoystickButton(joy, 11).whileHeld(() -> hook.setSetpoint(hook.getMeasurement() + 10));
     new JoystickButton(joy, 12).whileHeld(() -> hook.setSetpoint(hook.getMeasurement() - 10));
+    new JoystickButton(joy, 2).whileHeld(() -> intake.enableIntake(true))
+        .whenReleased(() -> intake.enableIntake(false));
   }
 
   /**
