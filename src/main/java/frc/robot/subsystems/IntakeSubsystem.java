@@ -7,6 +7,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakeSubsystem extends SubsystemBase {
     private WPI_TalonSRX controller = new WPI_TalonSRX(8);
 
+    public IntakeSubsystem(){
+        addChild("controller",controller);
+    }
+
     public void enableIntake(boolean enable) {
         if (enable)
             controller.setVoltage(10.0);
