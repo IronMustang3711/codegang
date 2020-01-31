@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.stuff;
 
 import com.ctre.phoenix.motorcontrol.Faults;
 import com.ctre.phoenix.motorcontrol.StickyFaults;

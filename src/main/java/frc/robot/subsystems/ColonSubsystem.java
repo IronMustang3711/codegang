@@ -2,10 +2,9 @@ package frc.robot.subsystems;
 
 import java.util.List;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.TalonFaultsReporter;
+import frc.robot.stuff.TalonFaultsReporter;
 
 public class ColonSubsystem extends SubsystemBase {
 

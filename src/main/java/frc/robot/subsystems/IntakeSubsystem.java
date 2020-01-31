@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.TalonFaultsReporter;
+import frc.robot.stuff.TalonFaultsReporter;
 
 public class IntakeSubsystem extends SubsystemBase {
     private WPI_TalonSRX controller = new WPI_TalonSRX(15);
