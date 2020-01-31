@@ -7,6 +7,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.List;
+
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -17,10 +21,10 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ChassisSubsystem extends SubsystemBase {
-  private WPI_TalonSRX left1;
-  private WPI_TalonSRX left2;
-  private WPI_TalonSRX right1;
-  private WPI_TalonSRX right2;
+  private WPI_TalonSRX leftFront;
+  private WPI_TalonSRX leftRear;
+  private WPI_TalonSRX rightFront;
+  private WPI_TalonSRX rightRear;
   private DifferentialDrive drive;
 
   AHRS ahrs;
@@ -28,24 +32,55 @@ public class ChassisSubsystem extends SubsystemBase {
 
   public ChassisSubsystem() {
     //setName("Chassis");
-    left1 = new WPI_TalonSRX(3);
-    left2 = new WPI_TalonSRX(10);
+    leftFront = new WPI_TalonSRX(3);
+    leftRear = new WPI_TalonSRX(10);
 
-    right1 = new WPI_TalonSRX(13);
-    right2 = new WPI_TalonSRX(11);
-    drive = new DifferentialDrive(new SpeedControllerGroup(left1, left2), new SpeedControllerGroup(right1, right2));;
+    rightFront = new WPI_TalonSRX(13);
+    rightRear = new WPI_TalonSRX(11);
+    drive = new DifferentialDrive(leftFront, rightFront);
+    //drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear), new SpeedControllerGroup(rightFront, rightRear));
 
     ahrs = new AHRS(SPI.Port.kMXP);
     gyro = new ADXRS450_Gyro();
 
-    addChild("left1",left1);
-    addChild("left2",left2);
-    addChild("right1",right1);
-    addChild("right2",right2);
+    addChild("left1",leftFront);
+    addChild("left2",leftRear);
+    addChild("right1",rightFront);
+    addChild("right2",rightRear);
     addChild("diff drive",drive); //TODO: remove the above lines if controllers get added twice
     addChild("navx/ahrs",ahrs);
     addChild("gyro",gyro);
 
+    drive.setExpiration(0.5);
+    drive.setMaxOutput(1.0);
+
+    drive.setRightSideInverted(false);
+
+    for(var talon : List.of(leftFront,leftRear,rightFront,rightRear)){
+
+      talon.setSafetyEnabled(true);
+      talon.setExpiration(0.5);
+      talon.configFactoryDefault();
+
+      talon.configOpenloopRamp(0.0);
+      talon.setNeutralMode(NeutralMode.Brake);
+      talon.configNeutralDeadband(0.04);
+      talon.configNominalOutputForward(0.0); //0.15
+      talon.configNominalOutputReverse(0.0); //-0.15
+      
+    }
+    
+    rightRear.follow(rightFront);
+    leftRear.follow(leftFront);
+
+    rightFront.setInverted(true);
+    leftFront.setInverted(false);
+
+    rightRear.setInverted(InvertType.FollowMaster);
+    leftRear.setInverted(InvertType.FollowMaster);
+
+    rightFront.setSensorPhase(true);
+    leftFront.setSensorPhase(true);
 
   }
   @Override
