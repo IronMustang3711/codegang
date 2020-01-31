@@ -12,13 +12,14 @@ import java.util.List;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.TalonFaultsReporter;
 
 public class ChassisSubsystem extends SubsystemBase {
   private WPI_TalonSRX leftFront;
@@ -68,6 +69,7 @@ public class ChassisSubsystem extends SubsystemBase {
       talon.configNominalOutputForward(0.0); //0.15
       talon.configNominalOutputReverse(0.0); //-0.15
       
+      TalonFaultsReporter.instrument(talon);
     }
     
     rightRear.follow(rightFront);
