@@ -12,7 +12,7 @@ public class HookSubsystem extends PIDSubsystem {
 
     public HookSubsystem() {
         super(new PIDController(kP, kI, kD));
-        hookController = new WPI_TalonSRX(7);
+        hookController = new WPI_TalonSRX(12);
     }
 
     @Override
