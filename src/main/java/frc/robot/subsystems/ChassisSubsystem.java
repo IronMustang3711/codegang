@@ -44,11 +44,11 @@ public class ChassisSubsystem extends SubsystemBase {
     ahrs = new AHRS(SPI.Port.kMXP);
     gyro = new ADXRS450_Gyro();
 
-    addChild("left1",leftFront);
-    addChild("left2",leftRear);
-    addChild("right1",rightFront);
-    addChild("right2",rightRear);
-    addChild("diff drive",drive); //TODO: remove the above lines if controllers get added twice
+    // addChild("left1",leftFront);
+     addChild("left2",leftRear);
+    // addChild("right1",rightFront);
+     addChild("right2",rightRear);
+    addChild("drive",drive); //TODO: remove the above lines if controllers get added twice
     addChild("navx/ahrs",ahrs);
     addChild("gyro",gyro);
 

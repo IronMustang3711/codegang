@@ -8,6 +8,10 @@ public class WinchSubsystem extends SubsystemBase
 {
     WPI_TalonSRX winch = new WPI_TalonSRX(02);
 
+    public WinchSubsystem(){
+        addChild("controller",winch);
+    }
+
     public void winchForward(boolean enable)
     {
         if(enable)
