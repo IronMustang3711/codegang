@@ -30,7 +30,6 @@ public class RobotContainer {
   private final HookSubsystem hook = new HookSubsystem();
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
-  private final FeederSubsystem feeder = new FeederSubsystem();
   private final WinchSubsystem winch = new WinchSubsystem();
   //private final ColorSubsystem color = new ColorSubsystem();
   private final ColonSubsystem colon = new ColonSubsystem();
@@ -59,8 +58,8 @@ public class RobotContainer {
         .whenReleased(() -> intake.enableIntake(false));
     new JoystickButton(joy, 1).whileHeld(() -> shooter.enableShooter(true))
         .whenReleased(() -> shooter.enableShooter(false));
-    new JoystickButton(joy, 3).whileHeld(() -> feeder.enableFeeder(true))
-        .whenReleased(() -> feeder.enableFeeder(false));
+    new JoystickButton(joy, 3).whileHeld(() -> colon.enableColon(true))
+        .whenReleased(() -> colon.enableColon(false));
     new JoystickButton(joy, 9).whileHeld(() -> winch.winchForward(true))
         .whenReleased(() -> winch.winchForward(false));
     new JoystickButton(joy, 10).whileHeld(() -> winch.winchReverse(true))
