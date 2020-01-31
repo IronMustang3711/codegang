@@ -12,13 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DriveWithJoystick;
-import frc.robot.subsystems.ChassisSubsystem;
-import frc.robot.subsystems.HookSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.FeederSubsystem;
-import frc.robot.subsystems.WinchSubsystem;
-//import frc.robot.subsystems.ColorSubsystem;
+import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -33,19 +27,18 @@ public class RobotContainer {
   Joystick joy = new Joystick(0);
   // The robot's subsystems and commands are defined here...
   private final ChassisSubsystem chassis = new ChassisSubsystem();
-
-  private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
   private final HookSubsystem hook = new HookSubsystem();
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final FeederSubsystem feeder = new FeederSubsystem();
   private final WinchSubsystem winch = new WinchSubsystem();
   //private final ColorSubsystem color = new ColorSubsystem();
+  private final ColonSubsystem colon = new ColonSubsystem();
+  private final PizzaWheelSubsytem pizzaWheel = new PizzaWheelSubsytem();
+
+  private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
 
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
@@ -81,7 +74,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
     return driveWithJoystick;
   }
 }
