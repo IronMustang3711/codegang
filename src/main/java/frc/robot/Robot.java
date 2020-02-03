@@ -7,9 +7,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
@@ -22,6 +21,7 @@ public class Robot extends TimedRobot {
  // private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private long lastUpdateTime;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,9 +29,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    lastUpdateTime = System.nanoTime();
   }
 
   /**
@@ -43,11 +42,17 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
+    long start = System.nanoTime();
     CommandScheduler.getInstance().run();
+    long stop = System.nanoTime();
+
+    double run_millis = (stop - start) / 1e9;
+    SmartDashboard.putNumber("runLoopTime(ms)", run_millis);
+
+    double periodic_millis = (start - lastUpdateTime) / 1e9;
+    SmartDashboard.putNumber("periodicTime(ms)", periodic_millis);
+    lastUpdateTime = start;
+
   }
 
   /**
