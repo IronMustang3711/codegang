@@ -21,6 +21,7 @@ import frc.robot.stuff.TalonFaultsReporter;
 import java.util.List;
 
 public class ChassisSubsystem extends SubsystemBase {
+
   private WPI_TalonSRX leftFront;
   private WPI_TalonSRX leftRear;
   private WPI_TalonSRX rightFront;
@@ -101,6 +102,60 @@ public class ChassisSubsystem extends SubsystemBase {
 
 
   public void arcadeDrive(double forward, double rotation) {
-    drive.arcadeDrive(forward * 0.8, -0.7 * rotation, true);
+    arcadeDrive2(forward * 0.8, -0.7 * rotation);
   }
+
+  @SuppressWarnings("ManualMinMaxCalculation")
+  private static double clamp(double value) {
+    return value > 1.0 ? 1.0 : value < -1.0 ? -1.0 : value;
+  }
+
+  //this came from edu.wpi.first.wpilibj.drive.DifferentialDrive
+  private void arcadeDrive2(double fwd, double rotate) {
+    fwd = clamp(fwd);
+
+    rotate = clamp(rotate);
+
+    // Square the inputs (while preserving the sign) to increase fine control
+    // while permitting full power.
+    // if (squareInputs) {
+    fwd = Math.copySign(fwd * fwd, fwd);
+    rotate = Math.copySign(rotate * rotate, rotate);
+    //  }
+
+    double leftMotorOutput;
+    double rightMotorOutput;
+
+    double maxInput = Math.copySign(Math.max(Math.abs(fwd), Math.abs(rotate)), fwd);
+
+    if (fwd >= 0.0) {
+      // First quadrant, else second quadrant
+      if (rotate >= 0.0) {
+        leftMotorOutput = maxInput;
+        rightMotorOutput = fwd - rotate;
+      } else {
+        leftMotorOutput = fwd + rotate;
+        rightMotorOutput = maxInput;
+      }
+    } else {
+      // Third quadrant, else fourth quadrant
+      if (rotate >= 0.0) {
+        leftMotorOutput = fwd + rotate;
+        rightMotorOutput = maxInput;
+      } else {
+        leftMotorOutput = maxInput;
+        rightMotorOutput = fwd - rotate;
+      }
+    }
+    leftMotorOutput = clamp(leftMotorOutput);
+    rightMotorOutput = clamp(rightMotorOutput);
+
+    leftFront.set(leftMotorOutput);
+    rightFront.set(rightMotorOutput);
+
+    //TODO: remove once talon following is working
+    leftRear.set(leftMotorOutput);
+    rightRear.set(rightMotorOutput);
+  }
+
 }
