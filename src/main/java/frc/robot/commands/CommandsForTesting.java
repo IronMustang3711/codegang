@@ -10,17 +10,23 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class CommandsForTesting {
   public static class RunIntake extends CommandBase {
     private final IntakeSubsystem intake;
+    private final double output;
 
-    public RunIntake(IntakeSubsystem intake) {
+    public RunIntake(IntakeSubsystem intake, double output) {
       this.intake = intake;
+      this.output = output;
       setName(RunIntake.class.getSimpleName());
       addRequirements(intake);
       setSubsystem(intake.getSubsystem());
     }
 
+    public RunIntake(IntakeSubsystem intake) {
+      this(intake, 1.0);
+    }
+
     @Override
     public void execute() {
-      intake.enableIntake(true);
+      intake.set(output);
     }
 
     @Override
@@ -79,21 +85,5 @@ public class CommandsForTesting {
     intakeRunner = new RunIntake(intakeSubsystem);
     colonRunner = new RunColon(colonSubsystem);
     shooterRunner = new RunShooter(shooterSubsystem);
-    // setupShuffleboardTab();
-    // addToLiveWindow();
   }
-
-  void setupShuffleboardTab() {
-    var tab = Shuffleboard.getTab("commands");
-    tab.add(intakeRunner);
-    tab.add(colonRunner);
-    tab.add(shooterRunner);
-  }
-
-  void addToLiveWindow() {
-    SendableRegistry.addLW(intakeRunner, intakeRunner.getSubsystem(), intakeRunner.getName());
-    SendableRegistry.addLW(colonRunner, colonRunner.getSubsystem(), colonRunner.getName());
-    SendableRegistry.addLW(shooterRunner, shooterRunner.getSubsystem(), shooterRunner.getName());
-  }
-
 }

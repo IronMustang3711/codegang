@@ -8,6 +8,8 @@ import frc.robot.commands.CommandsForTesting;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.subsystems.*;
 
+import static frc.robot.commands.CommandsForTesting.*;
+
 public class RobotContainer {
   Joystick joy = new Joystick(0);
 
@@ -42,17 +44,18 @@ public class RobotContainer {
     new JoystickButton(joy, 10).toggleWhenActive(testingCommands.intakeRunner);
     new JoystickButton(joy, 2).whileHeld(testingCommands.colonRunner);
 
-    var delayedStartColon = new ParallelCommandGroup(
-      new InstantCommand(() -> {
-        intake.enableIntake(false);
-        colon.enableColon(false);
-      }, intake, colon),
-      new WaitCommand(0.5)
-    ).andThen(new ParallelCommandGroup(new CommandsForTesting.RunColon(colon),
-                                       new CommandsForTesting.RunIntake(intake)));
+    var delayedStartColon =
+      new SequentialCommandGroup(
+        new ParallelCommandGroup(
+          new InstantCommand(() -> {
+            intake.enableIntake(false);
+            colon.enableColon(false);
+          }, intake, colon),
+          new WaitCommand(0.7)),
+        new ParallelCommandGroup(new RunColon(colon),
+                                 new WaitCommand(0.3).andThen(new RunIntake(intake, 0.5))));
 
-    new JoystickButton(joy, 1)
-      .whileHeld(new ParallelCommandGroup(testingCommands.shooterRunner, delayedStartColon));
+    new JoystickButton(joy, 1).whileHeld(new ParallelCommandGroup(testingCommands.shooterRunner, delayedStartColon));
 
   }
 
