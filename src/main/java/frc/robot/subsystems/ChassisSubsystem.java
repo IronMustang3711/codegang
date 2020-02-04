@@ -7,13 +7,17 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.stuff.TalonFaultsReporter;
 
 import java.util.List;
@@ -24,7 +28,7 @@ public class ChassisSubsystem extends SubsystemBase {
   private WPI_TalonSRX leftRear;
   private WPI_TalonSRX rightFront;
   private WPI_TalonSRX rightRear;
- // private DifferentialDrive drive;
+  // private DifferentialDrive drive;
 
   AHRS ahrs;
   ADXRS450_Gyro gyro;
@@ -71,8 +75,16 @@ public class ChassisSubsystem extends SubsystemBase {
       TalonFaultsReporter.instrument(talon);
     }
 
+    leftFront.set(ControlMode.PercentOutput, 0.0);
+    rightFront.set(ControlMode.PercentOutput, 0.0);
+
+
     rightRear.follow(rightFront);
     leftRear.follow(leftFront);
+
+    //TODO: see if these lines do anything
+    leftFront.set(ControlMode.PercentOutput, 0.0);
+    rightFront.set(ControlMode.PercentOutput, 0.0);
 
     rightFront.setInverted(true);
     leftFront.setInverted(false);
@@ -85,17 +97,67 @@ public class ChassisSubsystem extends SubsystemBase {
     rightFront.setSensorPhase(true);
     leftFront.setSensorPhase(true);
 
+    leftFront.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,
+                                           Constants.TalonConstants.PRIMARY_PID,
+                                           Constants.TalonConstants.DEFAULT_TIMEOUT);
+
+    leftFront.setSelectedSensorPosition(0, Constants.TalonConstants.PRIMARY_PID,
+                                        Constants.TalonConstants.DEFAULT_TIMEOUT);
+
+    rightFront.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,
+                                            Constants.TalonConstants.PRIMARY_PID,
+                                            Constants.TalonConstants.DEFAULT_TIMEOUT);
+
+    rightFront.setSelectedSensorPosition(0, Constants.TalonConstants.PRIMARY_PID,
+                                         Constants.TalonConstants.DEFAULT_TIMEOUT);
+    leftFront.setSensorPhase(true);
+    rightFront.setSensorPhase(true);
+
+
+    var tab = Shuffleboard.getTab(ChassisSubsystem.class.getSimpleName());
+    tab.addNumber("left_encoder", this::getLeftEncoderPosition);
+    tab.addNumber("right_encoder", this::getRightEncoderPosition);
+    tab.addNumber("left_vel", this::getLeftEncoderVelocity);
+    tab.addNumber("right_vel", this::getRightEncoderVelocity);
+    tab.addDoubleArray("vels", () -> new double[]{getLeftEncoderVelocity(), getRightEncoderVelocity()});
+    tab.add(leftFront);
+    tab.add(leftRear);
+    tab.add(rightFront);
+    tab.add(rightRear);
+  }
+
+  public double getLeftEncoderPosition() {
+    return leftFront.getSelectedSensorPosition();
+  }
+
+  public double getLeftEncoderVelocity() {
+    return leftFront.getSelectedSensorVelocity();
+  }
+
+  public double getRightEncoderPosition() {
+    return rightFront.getSelectedSensorPosition();
+  }
+
+  public double getRightEncoderVelocity() {
+    return rightFront.getSelectedSensorVelocity();
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("left1", leftFront.getMotorOutputPercent());
-    SmartDashboard.putNumber("left2", leftRear.getMotorOutputPercent());
+    SmartDashboard.putNumber("left1Output", leftFront.getMotorOutputPercent());
+    SmartDashboard.putNumber("left2Output", leftRear.getMotorOutputPercent());
 
-    SmartDashboard.putNumber("right1", rightFront.getMotorOutputPercent());
-    SmartDashboard.putNumber("right2", rightRear.getMotorOutputPercent());
+    SmartDashboard.putNumber("right1Output", rightFront.getMotorOutputPercent());
+    SmartDashboard.putNumber("right2Output", rightRear.getMotorOutputPercent());
 
+    double[] positions = {getLeftEncoderPosition(), getRightEncoderPosition()};
+    SmartDashboard.putNumber("leftPosition", positions[0]);
+    SmartDashboard.putNumber("rightPosition", positions[1]);
 
+    double[] vels = {getLeftEncoderVelocity(), getRightEncoderVelocity()};
+    SmartDashboard.putNumber("leftVel", vels[0]);
+    SmartDashboard.putNumber("rightVel", vels[1]);
+    SmartDashboard.putNumberArray("vels", vels);
   }
 
 
@@ -110,6 +172,13 @@ public class ChassisSubsystem extends SubsystemBase {
 
   //this came from edu.wpi.first.wpilibj.drive.DifferentialDrive
   private void arcadeDrive2(double fwd, double rotate) {
+    //TODO: try...
+    /*
+     *  Arcade Drive Example:
+     *		_talonLeft.set(ControlMode.PercentOutput, joyForward, DemandType.ArbitraryFeedForward, +joyTurn);
+     *		_talonRght.set(ControlMode.PercentOutput, joyForward, DemandType.ArbitraryFeedForward, -joyTurn);
+     */
+
     fwd = clamp(fwd);
 
     rotate = clamp(rotate);
