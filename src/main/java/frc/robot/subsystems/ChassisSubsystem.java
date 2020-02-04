@@ -107,12 +107,22 @@ public class ChassisSubsystem extends SubsystemBase {
     rightFront.setSensorPhase(true);
 
 
+    setupShuffleboard();
+  }
+
+  private void setupShuffleboard() {
     var tab = Shuffleboard.getTab(ChassisSubsystem.class.getSimpleName());
     tab.addNumber("left_encoder", this::getLeftEncoderPosition);
     tab.addNumber("right_encoder", this::getRightEncoderPosition);
     tab.addNumber("left_vel", this::getLeftEncoderVelocity);
     tab.addNumber("right_vel", this::getRightEncoderVelocity);
     tab.addDoubleArray("vels", () -> new double[]{getLeftEncoderVelocity(), getRightEncoderVelocity()});
+    tab.addNumber("left1_current", leftFront::getStatorCurrent);
+    tab.addNumber("left2_current", leftRear::getStatorCurrent);
+    tab.addNumber("right1_current", rightFront::getStatorCurrent);
+    tab.addNumber("right2_current", rightRear::getStatorCurrent);
+    tab.addDoubleArray("currents", () -> new double[]{leftFront.getStatorCurrent(), leftRear.getStatorCurrent(),
+                                                      rightFront.getStatorCurrent(), rightRear.getStatorCurrent()});
     tab.add(leftFront);
     tab.add(leftRear);
     tab.add(rightFront);
