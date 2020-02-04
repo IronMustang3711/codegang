@@ -127,6 +127,10 @@ public class ChassisSubsystem extends SubsystemBase {
     tab.add(leftRear);
     tab.add(rightFront);
     tab.add(rightRear);
+    tab.add(ahrs);
+    tab.add(gyro);
+
+    tab.addDoubleArray("headings", () -> new double[]{ahrs.getAngle(), gyro.getAngle()});
   }
 
   public double getLeftEncoderPosition() {
