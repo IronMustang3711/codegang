@@ -1,34 +1,24 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import frc.robot.subsystems.ChassisSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-/**
- * An example command that uses an example subsystem.
- */
+
 public class DriveWithJoystick extends CommandBase {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ChassisSubsystem chassis;
-private Joystick joy;
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
+  private Joystick joy;
+
+  //TODO: test these
+  private final SlewRateLimiter fwdLimiter = new SlewRateLimiter(0.5);
+  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(0.5);
+
+
   public DriveWithJoystick(ChassisSubsystem subsystem, Joystick joy) {
     this.chassis = subsystem;
     this.joy = joy;
-    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
-
   }
 
   // Called when the command is initially scheduled.
@@ -39,12 +29,18 @@ private Joystick joy;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-chassis.arcadeDrive(joy.getY(), joy.getTwist());
+    double fwd = joy.getY();
+    double rot = joy.getTwist() * -1.0; //TODO: verify that -1 makes sense.
+//forward * 0.8, -0.7 * rotation
+    double fwdOut = fwdLimiter.calculate(fwd);
+    double rotOut = rotLimiter.calculate(rot);
+    chassis.arcadeDrive(fwdOut, rotOut);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    chassis.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.
