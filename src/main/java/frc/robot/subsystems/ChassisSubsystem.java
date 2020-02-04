@@ -12,8 +12,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.stuff.TalonFaultsReporter;
@@ -26,7 +24,7 @@ public class ChassisSubsystem extends SubsystemBase {
   private WPI_TalonSRX leftRear;
   private WPI_TalonSRX rightFront;
   private WPI_TalonSRX rightRear;
-  private DifferentialDrive drive;
+ // private DifferentialDrive drive;
 
   AHRS ahrs;
   ADXRS450_Gyro gyro;
@@ -39,8 +37,8 @@ public class ChassisSubsystem extends SubsystemBase {
     rightFront = new WPI_TalonSRX(13);
     rightRear = new WPI_TalonSRX(11);
     //drive = new DifferentialDrive(leftFront, rightFront);
-    drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear),
-                                  new SpeedControllerGroup(rightFront, rightRear));
+//    drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear),
+//                                  new SpeedControllerGroup(rightFront, rightRear));
 
     ahrs = new AHRS(SPI.Port.kMXP);
     gyro = new ADXRS450_Gyro();
@@ -49,14 +47,14 @@ public class ChassisSubsystem extends SubsystemBase {
     addChild("left2", leftRear);
     addChild("right1", rightFront);
     addChild("right2", rightRear);
-    addChild("drive", drive); //TODO: remove the above lines if controllers get added twice
+    // addChild("drive", drive); //TODO: remove the above lines if controllers get added twice
     addChild("navx/ahrs", ahrs);
     addChild("gyro", gyro);
 
-    drive.setExpiration(0.5);
-    drive.setMaxOutput(1.0);
-
-    drive.setRightSideInverted(false);
+//    drive.setExpiration(0.5);
+//    drive.setMaxOutput(1.0);
+//
+//    drive.setRightSideInverted(false);
 
     for (var talon : List.of(leftFront, leftRear, rightFront, rightRear)) {
 
