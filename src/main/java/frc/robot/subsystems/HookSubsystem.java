@@ -12,6 +12,7 @@ public class HookSubsystem extends PIDSubsystem {
     public HookSubsystem() {
         super(new PIDController(kP, kI, kD));
         hookController = new WPI_TalonSRX(12);
+        hookController.setSafetyEnabled(false);
         addChild("pid",getController());
         addChild("controller",hookController);
     }

@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -66,6 +69,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    CommandScheduler.getInstance().enable();
+
 //    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 //
 //    // schedule the autonomous command (example)
@@ -97,12 +102,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    CommandScheduler.getInstance().enable();
   }
 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+    CommandScheduler.getInstance().run();
+    CommandScheduler.getInstance().disable();
   }
 
   /**
@@ -110,5 +118,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    var scheduler = CommandScheduler.getInstance();
+    scheduler.cancelAll();
   }
 }

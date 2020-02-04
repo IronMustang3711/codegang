@@ -79,8 +79,8 @@ public class CommandsForTesting {
     intakeRunner = new RunIntake(intakeSubsystem);
     colonRunner = new RunColon(colonSubsystem);
     shooterRunner = new RunShooter(shooterSubsystem);
-    setupShuffleboardTab();
-    addToLiveWindow();
+    // setupShuffleboardTab();
+    // addToLiveWindow();
   }
 
   void setupShuffleboardTab() {

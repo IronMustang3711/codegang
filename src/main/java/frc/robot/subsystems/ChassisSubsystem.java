@@ -15,9 +15,13 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.stuff.TalonFaultsReporter;
+//import frc.robot.stuff.TalonFaultsReporter;
 
 public class ChassisSubsystem extends SubsystemBase {
   private WPI_TalonSRX leftFront;
@@ -34,17 +38,18 @@ public class ChassisSubsystem extends SubsystemBase {
     leftFront = new WPI_TalonSRX(3);
     leftRear = new WPI_TalonSRX(10);
 
+
     rightFront = new WPI_TalonSRX(13);
     rightRear = new WPI_TalonSRX(11);
-    drive = new DifferentialDrive(leftFront, rightFront);
-    //drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear), new SpeedControllerGroup(rightFront, rightRear));
+    //drive = new DifferentialDrive(leftFront, rightFront);
+    drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear), new SpeedControllerGroup(rightFront, rightRear));
 
     ahrs = new AHRS(SPI.Port.kMXP);
     gyro = new ADXRS450_Gyro();
 
-    // addChild("left1",leftFront);
+     addChild("left1",leftFront);
      addChild("left2",leftRear);
-    // addChild("right1",rightFront);
+     addChild("right1",rightFront);
      addChild("right2",rightRear);
     addChild("drive",drive); //TODO: remove the above lines if controllers get added twice
     addChild("navx/ahrs",ahrs);
@@ -67,7 +72,7 @@ public class ChassisSubsystem extends SubsystemBase {
       talon.configNominalOutputForward(0.0); //0.15
       talon.configNominalOutputReverse(0.0); //-0.15
       
-      TalonFaultsReporter.instrument(talon);
+      //TalonFaultsReporter.instrument(talon);
     }
     
     rightRear.follow(rightFront);
@@ -76,8 +81,10 @@ public class ChassisSubsystem extends SubsystemBase {
     rightFront.setInverted(true);
     leftFront.setInverted(false);
 
-    rightRear.setInverted(InvertType.FollowMaster);
-    leftRear.setInverted(InvertType.FollowMaster);
+    // rightRear.setInverted(InvertType.FollowMaster);
+    // leftRear.setInverted(InvertType.FollowMaster);
+    rightRear.setInverted(true);
+    leftRear.setInverted(false);
 
     rightFront.setSensorPhase(true);
     leftFront.setSensorPhase(true);
@@ -85,10 +92,20 @@ public class ChassisSubsystem extends SubsystemBase {
   }
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("left1", leftFront.getMotorOutputPercent());
+    SmartDashboard.putNumber("left2", leftRear.getMotorOutputPercent());
+
+    SmartDashboard.putNumber("right1", rightFront.getMotorOutputPercent());
+    SmartDashboard.putNumber("right2", rightRear.getMotorOutputPercent());
+
+
+
+
+
   }
 
 
   public void arcadeDrive (double forward, double rotation){
-    drive.arcadeDrive(forward, rotation);
+    drive.arcadeDrive(forward*0.8, -0.7*rotation,true);
   }
 }

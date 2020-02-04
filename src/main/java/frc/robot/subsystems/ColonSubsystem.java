@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.stuff.TalonFaultsReporter;
+//import frc.robot.stuff.TalonFaultsReporter;
 
 public class ColonSubsystem extends SubsystemBase {
 
@@ -16,10 +16,10 @@ public class ColonSubsystem extends SubsystemBase {
     addChild("colon2", controller2);
 
     for (var talon : List.of(controller1, controller2)) {
-      talon.setSafetyEnabled(true);
+      talon.setSafetyEnabled(false);
       talon.setExpiration(0.5);
       talon.configFactoryDefault();
-      TalonFaultsReporter.instrument(talon);
+      //TalonFaultsReporter.instrument(talon);
     }
 
     controller1.setInverted(true);
@@ -34,10 +34,12 @@ public class ColonSubsystem extends SubsystemBase {
 //            controller1.setVoltage(10.0);
 //            controller2.setVoltage(10.0);
       controller1.set(1.0);
+      controller2.set(1.0);
     } else {
 //            controller1.setVoltage(0.0);
 //            controller2.setVoltage(0.0);
       controller1.set(0);
+      controller2.set(0);
     }
   }
 

@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.stuff.TalonFaultsReporter;
+//import frc.robot.stuff.TalonFaultsReporter;
 
 public class IntakeSubsystem extends SubsystemBase {
   private WPI_TalonSRX controller = new WPI_TalonSRX(15);
@@ -12,7 +12,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     addChild("intakeController", controller);
     controller.configFactoryDefault();
-    TalonFaultsReporter.instrument(controller);
+    //TalonFaultsReporter.instrument(controller);
+    controller.setSafetyEnabled(false);
   }
 
   public void enableIntake(boolean enable) {
