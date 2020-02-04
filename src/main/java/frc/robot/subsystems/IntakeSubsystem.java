@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.stuff.TalonFaultsReporter;
 
@@ -14,6 +15,14 @@ public class IntakeSubsystem extends SubsystemBase {
     TalonFaultsReporter.instrument(controller);
     controller.configFactoryDefault();
     controller.setSafetyEnabled(false);
+
+    setupShuffleboard();
+  }
+
+  private void setupShuffleboard() {
+    var tab = Shuffleboard.getTab(IntakeSubsystem.class.getSimpleName());
+    tab.add(controller);
+    tab.addNumber("controller_current", controller::getStatorCurrent);
   }
 
   public void enableIntake(boolean enable) {

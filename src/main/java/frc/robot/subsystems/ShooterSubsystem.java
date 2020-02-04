@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -43,6 +44,17 @@ public class ShooterSubsystem extends SubsystemBase {
 
     addChild("lowerShooter", lowerController);
     addChild("upperShooter", upperController);
+
+    setupShuffleboard();
+  }
+
+  private void setupShuffleboard() {
+    var tab = Shuffleboard.getTab(ShooterSubsystem.class.getSimpleName());
+    tab.add(lowerController);
+    tab.add(upperController);
+    tab.addNumber("lowerShooter_velocity", this::getLowerEncoderVelocity);
+    tab.addNumber("upperShooter_velocity", this::getUpperEncoderVelocity);
+    tab.addDoubleArray("velocities", () -> new double[]{getLowerEncoderVelocity(), getUpperEncoderVelocity()});
   }
 
   public double getLowerEncoderPosition() {

@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants.TalonConstants;
@@ -34,6 +35,16 @@ public class HookSubsystem extends PIDSubsystem {
     hookController.setSelectedSensorPosition(0, TalonConstants.PRIMARY_PID,
                                              TalonConstants.DEFAULT_TIMEOUT);
 
+    setupShuffleboard();
+
+  }
+
+  private void setupShuffleboard() {
+    var tab = Shuffleboard.getTab(HookSubsystem.class.getSimpleName());
+    tab.add(getController());
+    tab.add(hookController);
+    tab.addNumber("hookPosition", this::getEncoderPosition);
+    tab.addNumber("hookCurrent", hookController::getStatorCurrent);
   }
 
   public double getEncoderPosition() {

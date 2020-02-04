@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -46,6 +47,19 @@ public class ColonSubsystem extends SubsystemBase {
 
     controller2.setInverted(true);
     // controller2.setInverted(InvertType.FollowMaster);
+    setupShuffleboard();
+  }
+
+  private void setupShuffleboard() {
+    var tab = Shuffleboard.getTab(ColonSubsystem.class.getSimpleName());
+    tab.add(controller1);
+    tab.add(controller2);
+    tab.addNumber("colon1_pos", this::getFirstEncoderPosition);
+    tab.addNumber("colon2_pos", this::getSecondEncoderPosition);
+    tab.addNumber("colon1_vel", this::getFirstEncoderVelocity);
+    tab.addNumber("colon2_vel", this::getSecondEncoderVelocity);
+    tab.addNumber("colon1_current", controller1::getStatorCurrent);
+    tab.addNumber("colon2_current", controller2::getStatorCurrent);
   }
 
   public double getFirstEncoderPosition() {
