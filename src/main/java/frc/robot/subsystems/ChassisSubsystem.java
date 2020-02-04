@@ -7,9 +7,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
-
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
@@ -17,11 +14,11 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-//import frc.robot.stuff.TalonFaultsReporter;
+import frc.robot.stuff.TalonFaultsReporter;
+
+import java.util.List;
 
 public class ChassisSubsystem extends SubsystemBase {
   private WPI_TalonSRX leftFront;
@@ -31,10 +28,9 @@ public class ChassisSubsystem extends SubsystemBase {
   private DifferentialDrive drive;
 
   AHRS ahrs;
-  ADXRS450_Gyro gyro; //TODO: remove?
+  ADXRS450_Gyro gyro;
 
   public ChassisSubsystem() {
-    //setName("Chassis");
     leftFront = new WPI_TalonSRX(3);
     leftRear = new WPI_TalonSRX(10);
 
@@ -42,25 +38,26 @@ public class ChassisSubsystem extends SubsystemBase {
     rightFront = new WPI_TalonSRX(13);
     rightRear = new WPI_TalonSRX(11);
     //drive = new DifferentialDrive(leftFront, rightFront);
-    drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear), new SpeedControllerGroup(rightFront, rightRear));
+    drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear),
+                                  new SpeedControllerGroup(rightFront, rightRear));
 
     ahrs = new AHRS(SPI.Port.kMXP);
     gyro = new ADXRS450_Gyro();
 
-     addChild("left1",leftFront);
-     addChild("left2",leftRear);
-     addChild("right1",rightFront);
-     addChild("right2",rightRear);
-    addChild("drive",drive); //TODO: remove the above lines if controllers get added twice
-    addChild("navx/ahrs",ahrs);
-    addChild("gyro",gyro);
+    addChild("left1", leftFront);
+    addChild("left2", leftRear);
+    addChild("right1", rightFront);
+    addChild("right2", rightRear);
+    addChild("drive", drive); //TODO: remove the above lines if controllers get added twice
+    addChild("navx/ahrs", ahrs);
+    addChild("gyro", gyro);
 
     drive.setExpiration(0.5);
     drive.setMaxOutput(1.0);
 
     drive.setRightSideInverted(false);
 
-    for(var talon : List.of(leftFront,leftRear,rightFront,rightRear)){
+    for (var talon : List.of(leftFront, leftRear, rightFront, rightRear)) {
 
       talon.setSafetyEnabled(true);
       talon.setExpiration(0.5);
@@ -71,10 +68,10 @@ public class ChassisSubsystem extends SubsystemBase {
       talon.configNeutralDeadband(0.04);
       talon.configNominalOutputForward(0.0); //0.15
       talon.configNominalOutputReverse(0.0); //-0.15
-      
-      //TalonFaultsReporter.instrument(talon);
+
+      TalonFaultsReporter.instrument(talon);
     }
-    
+
     rightRear.follow(rightFront);
     leftRear.follow(leftFront);
 
@@ -90,6 +87,7 @@ public class ChassisSubsystem extends SubsystemBase {
     leftFront.setSensorPhase(true);
 
   }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("left1", leftFront.getMotorOutputPercent());
@@ -99,13 +97,10 @@ public class ChassisSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("right2", rightRear.getMotorOutputPercent());
 
 
-
-
-
   }
 
 
-  public void arcadeDrive (double forward, double rotation){
-    drive.arcadeDrive(forward*0.8, -0.7*rotation,true);
+  public void arcadeDrive(double forward, double rotation) {
+    drive.arcadeDrive(forward * 0.8, -0.7 * rotation, true);
   }
 }

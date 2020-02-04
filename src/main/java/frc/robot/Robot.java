@@ -93,6 +93,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    CommandScheduler.getInstance().enable();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -107,12 +108,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    CommandScheduler.getInstance().enable();
   }
 
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
+    m_robotContainer.testInit(); //TODO: this was never called on monday
     CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
     CommandScheduler.getInstance().disable();
@@ -123,7 +123,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    var scheduler = CommandScheduler.getInstance();
-    scheduler.cancelAll();
+//    var scheduler = CommandScheduler.getInstance();
+//    scheduler.cancelAll();
   }
 }

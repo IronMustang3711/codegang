@@ -77,18 +77,15 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void enableShooter(boolean enable) {
-    if (enable) lowerController.set(1.0);
-    else lowerController.set(0.0);
-//        if(enable)
-//        {
-//            shooter1Controller.setVoltage(10.0);
-//            shooter2Controller.setVoltage(10.0);
-//        }
-//        else
-//        {
-//            shooter1Controller.setVoltage(0.0);
-//            shooter2Controller.setVoltage(0.0);
-//        }
+//    if (enable) lowerController.set(1.0);
+//    else lowerController.set(0.0);
+    if (enable) {
+      lowerController.set(1.0);
+      upperController.set(1.0);
+    } else {
+      lowerController.set(0.0);
+      upperController.set(0.0);
+    }
 
   }
 

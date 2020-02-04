@@ -82,13 +82,9 @@ public class ColonSubsystem extends SubsystemBase {
 
   public void enableColon(boolean enable) {
     if (enable) {
-//            controller1.setVoltage(10.0);
-//            controller2.setVoltage(10.0);
       controller1.set(1.0);
       controller2.set(1.0);
     } else {
-//            controller1.setVoltage(0.0);
-//            controller2.setVoltage(0.0);
       controller1.set(0);
       controller2.set(0);
     }

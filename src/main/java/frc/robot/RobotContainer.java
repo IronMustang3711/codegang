@@ -1,14 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.CommandsForTesting;
 import frc.robot.commands.DriveWithJoystick;
@@ -33,9 +27,15 @@ public class RobotContainer {
     configureButtonBindings();
     chassis.setDefaultCommand(driveWithJoystick);
 
-    CommandScheduler.getInstance().onCommandInitialize(c->DriverStation.reportWarning("INIT: "+c.getName(), false));
-    CommandScheduler.getInstance().onCommandFinish(c->DriverStation.reportWarning("FINISH: "+c.getName(), false));
-    CommandScheduler.getInstance().onCommandInterrupt(c->DriverStation.reportWarning("INTERRUPT: "+c.getName(), false));
+//    CommandScheduler.getInstance().onCommandInitialize(c -> {
+//      DriverStation.reportWarning("INIT: " + c.getName(), false);
+//    });
+//    CommandScheduler.getInstance().onCommandFinish(c -> {
+//      DriverStation.reportWarning("FINISH: " + c.getName(), false);
+//    });
+    CommandScheduler.getInstance().onCommandInterrupt(c -> {
+      DriverStation.reportWarning("INTERRUPT: " + c.getName(), false);
+    });
   }
 
   private void configureButtonBindings() {
@@ -43,13 +43,13 @@ public class RobotContainer {
     new JoystickButton(joy, 2).whileHeld(testingCommands.colonRunner);
 
     var delayedStartColon = new ParallelCommandGroup(
-      new InstantCommand(() ->
-                         {
-                           intake.enableIntake(false);
-                           colon.enableColon(false);
-                         }, intake, colon),
+      new InstantCommand(() -> {
+        intake.enableIntake(false);
+        colon.enableColon(false);
+      }, intake, colon),
       new WaitCommand(0.5)
-    ).andThen(new CommandsForTesting.RunColon(colon).alongWith(new CommandsForTesting.RunIntake(intake)));
+    ).andThen(new ParallelCommandGroup(new CommandsForTesting.RunColon(colon),
+                                       new CommandsForTesting.RunIntake(intake)));
 
     new JoystickButton(joy, 1)
       .whileHeld(new ParallelCommandGroup(testingCommands.shooterRunner, delayedStartColon));
@@ -65,12 +65,12 @@ public class RobotContainer {
     return driveWithJoystick;
   }
 
-public void testInit() {
-  Runnable init = ()->{chassis.arcadeDrive(0, 0);};
-  Runnable end = ()->{};
+  public void testInit() {
+    Runnable init = () -> chassis.arcadeDrive(0, 0);
+    Runnable end = () -> { };
 
- var cmd = new StartEndCommand(init,end ,chassis);
- cmd.schedule();
+    var cmd = new StartEndCommand(init, end, chassis);
+    cmd.schedule();
 
-}
+  }
 }
