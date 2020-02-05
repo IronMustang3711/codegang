@@ -59,6 +59,10 @@ public class RobotContainer {
 
 
     new JoystickButton(joy, 1).whileHeld(shootSequence);
+    new JoystickButton(joy, 4).whileHeld(new StartEndCommand(() -> hook.setOutput(-0.25), () -> hook.setOutput(0.0), hook));
+    new JoystickButton(joy, 6).whileHeld(new StartEndCommand(() -> hook.setOutput(0.25), () -> hook.setOutput(0.0), hook));
+    new JoystickButton(joy, 7).whileHeld(() -> winch.winchForward()).whenReleased(() -> winch.winchDisable());
+    new JoystickButton(joy, 8).whileHeld(winch::winchForward).whenReleased(winch::winchDisable);
 
   }
 

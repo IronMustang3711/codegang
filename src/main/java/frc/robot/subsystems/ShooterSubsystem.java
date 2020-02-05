@@ -13,11 +13,11 @@ import frc.robot.Constants;
 import frc.robot.stuff.TalonFaultsReporter;
 
 public class ShooterSubsystem extends SubsystemBase {
-  private WPI_TalonSRX lowerController = new WPI_TalonSRX(5);
-  private WPI_TalonSRX upperController = new WPI_TalonSRX(27);
+  private WPI_TalonSRX controller1 = new WPI_TalonSRX(5);
+  private WPI_TalonSRX controller2 = new WPI_TalonSRX(27);
 
   public ShooterSubsystem() {
-    for (var talon : List.of(lowerController, upperController)) {
+    for (var talon : List.of(controller1, controller2)) {
       talon.setSafetyEnabled(false);
       talon.setExpiration(0.5);
       talon.configFactoryDefault();
@@ -35,42 +35,42 @@ public class ShooterSubsystem extends SubsystemBase {
       TalonFaultsReporter.instrument(talon);
     }
 
-    upperController.follow(lowerController);
-    upperController.setInverted(InvertType.FollowMaster);
-    lowerController.setInverted(true);
-    upperController.setInverted(true);
-    lowerController.setSensorPhase(true);
-    upperController.setSensorPhase(true);
+    controller2.follow(controller1);
+    controller2.setInverted(InvertType.FollowMaster);
+    controller1.setInverted(true);
+    controller2.setInverted(true);
+    controller1.setSensorPhase(true);
+    controller2.setSensorPhase(true);
 
-    addChild("lowerShooter", lowerController);
-    addChild("upperShooter", upperController);
+    addChild("Shooter1", controller1);
+    addChild("Shooter2", controller2);
 
     setupShuffleboard();
   }
 
   private void setupShuffleboard() {
     var tab = Shuffleboard.getTab(ShooterSubsystem.class.getSimpleName());
-    tab.add(lowerController);
-    tab.add(upperController);
-    tab.addNumber("lowerShooter_velocity", this::getLowerEncoderVelocity);
-    tab.addNumber("upperShooter_velocity", this::getUpperEncoderVelocity);
+    tab.add(controller1);
+    tab.add(controller2);
+    tab.addNumber("Shooter1_velocity", this::getLowerEncoderVelocity);
+    tab.addNumber("Shooter2_velocity", this::getUpperEncoderVelocity);
     tab.addDoubleArray("velocities", () -> new double[]{getLowerEncoderVelocity(), getUpperEncoderVelocity()});
   }
 
   public double getLowerEncoderPosition() {
-    return lowerController.getSelectedSensorPosition();
+    return controller1.getSelectedSensorPosition();
   }
 
   public double getLowerEncoderVelocity() {
-    return lowerController.getSelectedSensorVelocity();
+    return controller1.getSelectedSensorVelocity();
   }
 
   public double getUpperEncoderPosition() {
-    return upperController.getSelectedSensorPosition();
+    return controller2.getSelectedSensorPosition();
   }
 
   public double getUpperEncoderVelocity() {
-    return upperController.getSelectedSensorVelocity();
+    return controller2.getSelectedSensorVelocity();
   }
 
   @Override
@@ -92,16 +92,16 @@ public class ShooterSubsystem extends SubsystemBase {
 //    if (enable) lowerController.set(1.0);
 //    else lowerController.set(0.0);
     if (enable) {
-      lowerController.set(1.0);
-      upperController.set(1.0);
+      controller1.set(1.0);
+      controller2.set(1.0);
     } else {
-      lowerController.set(0.0);
-      upperController.set(0.0);
+      controller1.set(0.0);
+      controller2.set(0.0);
     }
 
   }
 
   public boolean isEnabled() {
-    return lowerController.get() != 0.0;
+    return controller1.get() != 0.0;
   }
 }

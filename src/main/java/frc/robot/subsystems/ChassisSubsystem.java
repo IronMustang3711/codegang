@@ -79,13 +79,13 @@ public class ChassisSubsystem extends SubsystemBase {
     leftFront.set(ControlMode.PercentOutput, 0.0);
     rightFront.set(ControlMode.PercentOutput, 0.0);
 
-    rightFront.setInverted(true);
-    leftFront.setInverted(false);
+    rightFront.setInverted(false);
+    leftFront.setInverted(true);
 
     // rightRear.setInverted(InvertType.FollowMaster);
     // leftRear.setInverted(InvertType.FollowMaster);
-    rightRear.setInverted(true);
-    leftRear.setInverted(false);
+    rightRear.setInverted(false);
+    leftRear.setInverted(true);
 
     rightFront.setSensorPhase(true);
     leftFront.setSensorPhase(true);

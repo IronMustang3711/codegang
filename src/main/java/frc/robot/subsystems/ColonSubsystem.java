@@ -39,7 +39,7 @@ public class ColonSubsystem extends SubsystemBase {
       talon.setSelectedSensorPosition(0, TalonConstants.PRIMARY_PID,
                                       TalonConstants.DEFAULT_TIMEOUT);
     }
-    controller1.setSensorPhase(true);
+    controller1.setSensorPhase(false);
     controller2.setSensorPhase(true);
 
     controller1.setInverted(true);

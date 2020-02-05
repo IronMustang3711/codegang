@@ -67,6 +67,10 @@ public class HookSubsystem extends PIDSubsystem {
     hookController.set(output);
   }
 
+  public void setOutput(double amount) {
+    hookController.set(amount);
+  }
+
   @Override
   public double getMeasurement() {
     return hookController.getSelectedSensorPosition();

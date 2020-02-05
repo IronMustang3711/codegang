@@ -10,10 +10,6 @@ public class DriveWithJoystick extends CommandBase {
   private final ChassisSubsystem chassis;
   private Joystick joy;
 
-  //TODO: test these
-  private final SlewRateLimiter fwdLimiter = new SlewRateLimiter(0.5);
-  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(0.5);
-
 
   public DriveWithJoystick(ChassisSubsystem subsystem, Joystick joy) {
     this.chassis = subsystem;
@@ -31,9 +27,8 @@ public class DriveWithJoystick extends CommandBase {
   public void execute() {
     double fwd = joy.getY();
     double rot = joy.getTwist() * -1.0; //TODO: verify that -1 makes sense.
-//forward * 0.8, -0.7 * rotation
-    double fwdOut = fwdLimiter.calculate(fwd);
-    double rotOut = rotLimiter.calculate(rot);
+    double fwdOut = -0.8 * fwd;
+    double rotOut = -0.7 * rot;
     chassis.arcadeDrive(fwdOut, rotOut);
   }
 
