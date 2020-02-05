@@ -43,7 +43,7 @@ public class ColonSubsystem extends SubsystemBase {
     controller2.setSensorPhase(true);
 
     controller1.setInverted(true);
-    controller2.follow(controller1);
+    //controller2.follow(controller1);
 
     controller2.setInverted(true);
     // controller2.setInverted(InvertType.FollowMaster);

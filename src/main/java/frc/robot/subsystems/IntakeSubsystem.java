@@ -10,7 +10,7 @@ import frc.robot.stuff.TalonFaultsReporter;
 
 public class IntakeSubsystem extends SubsystemBase {
   private WPI_TalonSRX controller = new WPI_TalonSRX(15);
-  PigeonIMU imu = new PigeonIMU(controller);
+ // PigeonIMU imu = new PigeonIMU(controller);
 
   public IntakeSubsystem() {
     addChild("intakeController", controller);
@@ -25,7 +25,7 @@ public class IntakeSubsystem extends SubsystemBase {
     var tab = Shuffleboard.getTab(IntakeSubsystem.class.getSimpleName());
     tab.add(controller);
     tab.addNumber("controller_current", controller::getStatorCurrent);
-    tab.addNumber("IMU Heading", imu::getFusedHeading);
+   // tab.addNumber("IMU Heading", imu::getFusedHeading);
   }
 
   public void enableIntake(boolean enable) {

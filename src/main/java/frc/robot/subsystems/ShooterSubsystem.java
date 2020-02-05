@@ -14,7 +14,7 @@ import frc.robot.stuff.TalonFaultsReporter;
 
 public class ShooterSubsystem extends SubsystemBase {
   private WPI_TalonSRX controller1 = new WPI_TalonSRX(5);
-  private WPI_TalonSRX controller2 = new WPI_TalonSRX(27);
+  private WPI_TalonSRX controller2 = new WPI_TalonSRX(27); //lower
 
   public ShooterSubsystem() {
     for (var talon : List.of(controller1, controller2)) {
