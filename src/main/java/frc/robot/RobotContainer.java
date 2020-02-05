@@ -44,7 +44,8 @@ public class RobotContainer {
     new JoystickButton(joy, 10).toggleWhenActive(testingCommands.intakeRunner);
     new JoystickButton(joy, 2).whileHeld(testingCommands.colonRunner);
 
-    var delayedStartColon =
+    var shootSequence =new ParallelCommandGroup(
+      new RunShooter(shooter),
       new SequentialCommandGroup(
         new ParallelCommandGroup(
           new InstantCommand(() -> {
@@ -53,9 +54,11 @@ public class RobotContainer {
           }, intake, colon),
           new WaitCommand(0.7)),
         new ParallelCommandGroup(new RunColon(colon),
-                                 new WaitCommand(0.3).andThen(new RunIntake(intake, 0.5))));
+                                 new WaitCommand(0.3).andThen(new RunIntake(intake, 0.5)))));
 
-    new JoystickButton(joy, 1).whileHeld(new ParallelCommandGroup(testingCommands.shooterRunner, delayedStartColon));
+
+
+    new JoystickButton(joy, 1).whileHeld(shootSequence);
 
   }
 

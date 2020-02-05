@@ -59,7 +59,7 @@ public class CommandsForTesting {
   public static class RunShooter extends CommandBase {
     private final ShooterSubsystem shooter;
 
-    RunShooter(ShooterSubsystem shooter) {
+    public RunShooter(ShooterSubsystem shooter) {
       this.shooter = shooter;
       setName(RunShooter.class.getSimpleName());
       addRequirements(shooter);
