@@ -25,7 +25,12 @@ public class IntakeSubsystem extends SubsystemBase {
     var tab = Shuffleboard.getTab(IntakeSubsystem.class.getSimpleName());
     tab.add(controller);
     tab.addNumber("controller_current", controller::getStatorCurrent);
+    tab.addNumber("velocity", this::getEncoderVelocity);
    // tab.addNumber("IMU Heading", imu::getFusedHeading);
+  }
+
+  private double getEncoderVelocity() {
+    return controller.getSelectedSensorVelocity();
   }
 
   public void enableIntake(boolean enable) {

@@ -151,20 +151,20 @@ public class ChassisSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("left1Output", leftFront.getMotorOutputPercent());
-    SmartDashboard.putNumber("left2Output", leftRear.getMotorOutputPercent());
+    // SmartDashboard.putNumber("left1Output", leftFront.getMotorOutputPercent());
+    // SmartDashboard.putNumber("left2Output", leftRear.getMotorOutputPercent());
 
-    SmartDashboard.putNumber("right1Output", rightFront.getMotorOutputPercent());
-    SmartDashboard.putNumber("right2Output", rightRear.getMotorOutputPercent());
+    // SmartDashboard.putNumber("right1Output", rightFront.getMotorOutputPercent());
+    // SmartDashboard.putNumber("right2Output", rightRear.getMotorOutputPercent());
 
-    double[] positions = {getLeftEncoderPosition(), getRightEncoderPosition()};
-    SmartDashboard.putNumber("leftPosition", positions[0]);
-    SmartDashboard.putNumber("rightPosition", positions[1]);
+    // double[] positions = {getLeftEncoderPosition(), getRightEncoderPosition()};
+    // SmartDashboard.putNumber("leftPosition", positions[0]);
+    // SmartDashboard.putNumber("rightPosition", positions[1]);
 
-    double[] vels = {getLeftEncoderVelocity(), getRightEncoderVelocity()};
-    SmartDashboard.putNumber("leftVel", vels[0]);
-    SmartDashboard.putNumber("rightVel", vels[1]);
-    SmartDashboard.putNumberArray("vels", vels);
+    // double[] vels = {getLeftEncoderVelocity(), getRightEncoderVelocity()};
+    // SmartDashboard.putNumber("leftVel", vels[0]);
+    // SmartDashboard.putNumber("rightVel", vels[1]);
+    // SmartDashboard.putNumberArray("vels", vels);
   }
 
 

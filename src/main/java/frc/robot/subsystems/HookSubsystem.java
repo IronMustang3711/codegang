@@ -58,8 +58,8 @@ public class HookSubsystem extends PIDSubsystem {
   @Override
   public void periodic() {
     super.periodic();
-    SmartDashboard.putNumber("hook_position", getEncoderPosition());
-    SmartDashboard.putNumber("hook_velocity", getEncoderVelocity());
+    // SmartDashboard.putNumber("hook_position", getEncoderPosition());
+    // SmartDashboard.putNumber("hook_velocity", getEncoderVelocity());
   }
 
   @Override

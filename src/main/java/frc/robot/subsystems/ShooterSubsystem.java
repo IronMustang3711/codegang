@@ -75,15 +75,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double[] positions = {getLowerEncoderPosition(), getUpperEncoderPosition()};
-    SmartDashboard.putNumber("lowerShooter_position", positions[0]);
-    SmartDashboard.putNumber("upperShooter_position", positions[1]);
-    SmartDashboard.putNumberArray("shooter_position", positions);
+    // double[] positions = {getLowerEncoderPosition(), getUpperEncoderPosition()};
+    // SmartDashboard.putNumber("lowerShooter_position", positions[0]);
+    // SmartDashboard.putNumber("upperShooter_position", positions[1]);
+    // SmartDashboard.putNumberArray("shooter_position", positions);
 
-    double[] vels = {getLowerEncoderVelocity(), getUpperEncoderVelocity()};
-    SmartDashboard.putNumber("lowerShooter_velocity", vels[0]);
-    SmartDashboard.putNumber("upperShooter_velocity", vels[1]);
-    SmartDashboard.putNumberArray("shooter_velocity", vels);
+    // double[] vels = {getLowerEncoderVelocity(), getUpperEncoderVelocity()};
+    // SmartDashboard.putNumber("lowerShooter_velocity", vels[0]);
+    // SmartDashboard.putNumber("upperShooter_velocity", vels[1]);
+    // SmartDashboard.putNumberArray("shooter_velocity", vels);
 
 
   }

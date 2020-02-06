@@ -83,14 +83,14 @@ public class ColonSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("colon1_position", getFirstEncoderPosition());
-    SmartDashboard.putNumber("colon2_position", getSecondEncoderPosition());
-    SmartDashboard.putNumberArray("colon_positions",
-                                  new double[]{getFirstEncoderPosition(), getSecondEncoderPosition()});
-    SmartDashboard.putNumber("colon1_velocity", getFirstEncoderVelocity());
-    SmartDashboard.putNumber("colon2_velocity", getSecondEncoderVelocity());
-    SmartDashboard.putNumberArray("colon_velocities(sp?)",
-                                  new double[]{getFirstEncoderVelocity(), getSecondEncoderVelocity()});
+    // SmartDashboard.putNumber("colon1_position", getFirstEncoderPosition());
+    // SmartDashboard.putNumber("colon2_position", getSecondEncoderPosition());
+    // SmartDashboard.putNumberArray("colon_positions",
+    //                               new double[]{getFirstEncoderPosition(), getSecondEncoderPosition()});
+    // SmartDashboard.putNumber("colon1_velocity", getFirstEncoderVelocity());
+    // SmartDashboard.putNumber("colon2_velocity", getSecondEncoderVelocity());
+    // SmartDashboard.putNumberArray("colon_velocities(sp?)",
+    //                               new double[]{getFirstEncoderVelocity(), getSecondEncoderVelocity()});
 
   }
 
