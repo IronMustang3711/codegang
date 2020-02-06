@@ -12,14 +12,14 @@ import frc.robot.stuff.TalonFaultsReporter;
 
 import static frc.robot.Constants.*;
 
-public class ColonSubsystem extends SubsystemBase {
+public class FeederSubsystem extends SubsystemBase {
 
   WPI_TalonSRX controller1 = new WPI_TalonSRX(1);
   WPI_TalonSRX controller2 = new WPI_TalonSRX(4);
 
-  public ColonSubsystem() {
-    addChild("colon1", controller1);
-    addChild("colon2", controller2);
+  public FeederSubsystem() {
+    addChild("feeder1", controller1);
+    addChild("feeder2", controller2);
 
     for (var talon : List.of(controller1, controller2)) {
       talon.setSafetyEnabled(false);
@@ -51,15 +51,15 @@ public class ColonSubsystem extends SubsystemBase {
   }
 
   private void setupShuffleboard() {
-    var tab = Shuffleboard.getTab(ColonSubsystem.class.getSimpleName());
+    var tab = Shuffleboard.getTab(FeederSubsystem.class.getSimpleName());
     tab.add(controller1);
     tab.add(controller2);
-    tab.addNumber("colon1_pos", this::getFirstEncoderPosition);
-    tab.addNumber("colon2_pos", this::getSecondEncoderPosition);
-    tab.addNumber("colon1_vel", this::getFirstEncoderVelocity);
-    tab.addNumber("colon2_vel", this::getSecondEncoderVelocity);
-    tab.addNumber("colon1_current", controller1::getStatorCurrent);
-    tab.addNumber("colon2_current", controller2::getStatorCurrent);
+    tab.addNumber("feeder1_pos", this::getFirstEncoderPosition);
+    tab.addNumber("feeder2_pos", this::getSecondEncoderPosition);
+    tab.addNumber("feeder1_vel", this::getFirstEncoderVelocity);
+    tab.addNumber("feeder2_vel", this::getSecondEncoderVelocity);
+    tab.addNumber("feeder1_current", controller1::getStatorCurrent);
+    tab.addNumber("feeder2_current", controller2::getStatorCurrent);
   }
 
   public double getFirstEncoderPosition() {
@@ -94,7 +94,7 @@ public class ColonSubsystem extends SubsystemBase {
 
   }
 
-  public void enableColon(boolean enable) {
+  public void enable(boolean enable) {
     if (enable) {
       controller1.set(1.0);
       controller2.set(1.0);

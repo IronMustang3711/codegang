@@ -18,12 +18,12 @@ public class RobotContainer {
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final WinchSubsystem winch = new WinchSubsystem();
-  private final ColonSubsystem colon = new ColonSubsystem();
+  private final FeederSubsystem feedworks = new FeederSubsystem();
   private final PizzaWheelSubsytem pizzaWheel = new PizzaWheelSubsytem();
 
   private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
 
-  private final CommandsForTesting testingCommands = new CommandsForTesting(intake, colon, shooter);
+  private final CommandsForTesting testingCommands = new CommandsForTesting(intake, feedworks, shooter);
 
   public RobotContainer() {
     configureButtonBindings();
@@ -50,10 +50,10 @@ public class RobotContainer {
         new ParallelCommandGroup(
           new InstantCommand(() -> {
             intake.enableIntake(false);
-            colon.enableColon(false);
-          }, intake, colon),
+            feedworks.enable(false);
+          }, intake, feedworks),
           new WaitCommand(0.7)),
-        new ParallelCommandGroup(new RunColon(colon),
+        new ParallelCommandGroup(new RunFeeder(feedworks),
                                  new WaitCommand(0.3).andThen(new RunIntake(intake, 0.5)))));
 
 

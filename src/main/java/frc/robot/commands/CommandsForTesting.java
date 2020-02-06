@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ColonSubsystem;
+import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -35,24 +35,24 @@ public class CommandsForTesting {
     }
   }
 
-  public static class RunColon extends CommandBase {
-    private final ColonSubsystem colon;
+  public static class RunFeeder extends CommandBase {
+    private final FeederSubsystem colon;
 
-    public RunColon(ColonSubsystem colon) {
+    public RunFeeder(FeederSubsystem colon) {
       this.colon = colon;
-      setName(RunColon.class.getSimpleName());
+      setName(RunFeeder.class.getSimpleName());
       addRequirements(colon);
       setSubsystem(colon.getSubsystem());
     }
 
     @Override
     public void execute() {
-      colon.enableColon(true);
+      colon.enable(true);
     }
 
     @Override
     public void end(boolean interrupted) {
-      colon.enableColon(false);
+      colon.enable(false);
     }
   }
 
@@ -78,12 +78,12 @@ public class CommandsForTesting {
   }
 
   public final RunIntake intakeRunner;
-  public final RunColon colonRunner;
+  public final RunFeeder colonRunner;
   public final RunShooter shooterRunner;
 
-  public CommandsForTesting(IntakeSubsystem intakeSubsystem, ColonSubsystem colonSubsystem, ShooterSubsystem shooterSubsystem) {
+  public CommandsForTesting(IntakeSubsystem intakeSubsystem, FeederSubsystem colonSubsystem, ShooterSubsystem shooterSubsystem) {
     intakeRunner = new RunIntake(intakeSubsystem);
-    colonRunner = new RunColon(colonSubsystem);
+    colonRunner = new RunFeeder(colonSubsystem);
     shooterRunner = new RunShooter(shooterSubsystem);
   }
 }
