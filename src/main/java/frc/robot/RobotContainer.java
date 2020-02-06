@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.*;
@@ -29,15 +31,24 @@ public class RobotContainer {
     configureButtonBindings();
     chassis.setDefaultCommand(driveWithJoystick);
 
+    setupCamera();
+
 //    CommandScheduler.getInstance().onCommandInitialize(c -> {
 //      DriverStation.reportWarning("INIT: " + c.getName(), false);
 //    });
 //    CommandScheduler.getInstance().onCommandFinish(c -> {
 //      DriverStation.reportWarning("FINISH: " + c.getName(), false);
 //    });
-    CommandScheduler.getInstance().onCommandInterrupt(c -> {
-      DriverStation.reportWarning("INTERRUPT: " + c.getName(), false);
-    });
+    // CommandScheduler.getInstance().onCommandInterrupt(c -> {
+    //   DriverStation.reportWarning("INTERRUPT: " + c.getName(), false);
+    // });
+  }
+
+  UsbCamera cam;
+  private void setupCamera(){
+    cam = CameraServer.getInstance().startAutomaticCapture();
+    cam.setResolution(640, 480);
+    cam.setFPS(30);
   }
 
   private void configureButtonBindings() {
@@ -52,7 +63,7 @@ public class RobotContainer {
             intake.enableIntake(false);
             feedworks.enable(false);
           }, intake, feedworks),
-          new WaitCommand(0.7)),
+          new WaitCommand(1.0)),
         new ParallelCommandGroup(new RunFeeder(feedworks),
                                  new WaitCommand(0.3).andThen(new RunIntake(intake, 0.5)))));
 
@@ -61,8 +72,8 @@ public class RobotContainer {
     new JoystickButton(joy, 1).whileHeld(shootSequence);
     new JoystickButton(joy, 4).whileHeld(new StartEndCommand(() -> hook.setOutput(-0.25), () -> hook.setOutput(0.0), hook));
     new JoystickButton(joy, 6).whileHeld(new StartEndCommand(() -> hook.setOutput(0.25), () -> hook.setOutput(0.0), hook));
-    new JoystickButton(joy, 7).whileHeld(() -> winch.winchForward()).whenReleased(() -> winch.winchDisable());
-    new JoystickButton(joy, 8).whileHeld(winch::winchForward).whenReleased(winch::winchDisable);
+    new JoystickButton(joy, 7).whileHeld(winch::winchForward).whenReleased(() -> winch.winchDisable());
+    new JoystickButton(joy, 8).whileHeld(winch::winchReverse).whenReleased(winch::winchDisable);
 
   }
 
