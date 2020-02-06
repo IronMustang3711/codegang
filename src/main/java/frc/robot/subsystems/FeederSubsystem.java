@@ -40,7 +40,7 @@ public class FeederSubsystem extends SubsystemBase {
                                       TalonConstants.DEFAULT_TIMEOUT);
     }
     controller1.setSensorPhase(false);
-    controller2.setSensorPhase(true);
+    controller2.setSensorPhase(false);
 
     controller1.setInverted(true);
     //controller2.follow(controller1);
