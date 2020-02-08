@@ -29,7 +29,11 @@ public class DriveWithJoystick extends CommandBase {
     double rot = joy.getTwist();
     double fwdOut = -0.8 * fwd;
     double rotOut = 0.8 * rot;
-    chassis.arcadeDrive(fwdOut, rotOut);
+
+    fwdOut = Math.copySign(fwdOut * fwdOut, fwdOut);
+    rotOut = Math.copySign(rotOut * rotOut, rotOut);
+
+    chassis.arcadeDrive(rotOut, rotOut);
   }
 
   // Called once the command ends or is interrupted.

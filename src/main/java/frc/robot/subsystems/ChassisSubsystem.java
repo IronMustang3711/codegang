@@ -193,8 +193,8 @@ public class ChassisSubsystem extends SubsystemBase {
     // Square the inputs (while preserving the sign) to increase fine control
     // while permitting full power.
     // if (squareInputs) {
-    fwd = Math.copySign(fwd * fwd, fwd);
-    rotate = Math.copySign(rotate * rotate, rotate);
+//    fwd = Math.copySign(fwd * fwd, fwd);
+//    rotate = Math.copySign(rotate * rotate, rotate);
     //  }
 
     double leftMotorOutput;
