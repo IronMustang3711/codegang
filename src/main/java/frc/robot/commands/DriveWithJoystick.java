@@ -26,9 +26,9 @@ public class DriveWithJoystick extends CommandBase {
   @Override
   public void execute() {
     double fwd = joy.getY();
-    double rot = joy.getTwist();
+    double rot = joy.getTwist() * -1.0; //TODO: verify that -1 makes sense.
     double fwdOut = -0.8 * fwd;
-    double rotOut = 0.8 * rot;
+    double rotOut = -0.7 * rot;
     chassis.arcadeDrive(fwdOut, rotOut);
   }
 
