@@ -12,6 +12,8 @@ import frc.robot.subsystems.*;
 
 import static frc.robot.commands.CommandsForTesting.*;
 
+import java.util.function.DoubleSupplier;
+
 public class RobotContainer {
   Joystick joy = new Joystick(0);
 
@@ -25,8 +27,11 @@ public class RobotContainer {
 
   private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
 
-  private final CommandsForTesting testingCommands = new CommandsForTesting(intake, feedworks, shooter);
+  private final CommandsForTesting testingCommands = new CommandsForTesting(intake, feedworks, shooter,this::shooterOutput);
 
+  double shooterOutput(){
+    return joy.getThrottle()*0.5 + 0.5;
+  }
   public RobotContainer() {
     configureButtonBindings();
     chassis.setDefaultCommand(driveWithJoystick);
@@ -54,9 +59,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new JoystickButton(joy, 10).toggleWhenActive(testingCommands.intakeRunner);
     new JoystickButton(joy, 2).whileHeld(testingCommands.colonRunner);
-
     var shootSequence =new ParallelCommandGroup(
-      new RunShooter(shooter),
+      new RunShooter(shooter,this::shooterOutput),
       new SequentialCommandGroup(
         new ParallelCommandGroup(
           new InstantCommand(() -> {

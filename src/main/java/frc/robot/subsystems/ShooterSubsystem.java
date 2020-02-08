@@ -15,7 +15,9 @@ import frc.robot.stuff.TalonFaultsReporter;
 public class ShooterSubsystem extends SubsystemBase {
   private WPI_TalonSRX controller1 = new WPI_TalonSRX(5);
   private WPI_TalonSRX controller2 = new WPI_TalonSRX(27); //lower
+  double out = 0.0;
 
+  double getOutput(){ return out;}
   public ShooterSubsystem() {
     for (var talon : List.of(controller1, controller2)) {
       talon.setSafetyEnabled(false);
@@ -54,7 +56,8 @@ public class ShooterSubsystem extends SubsystemBase {
     tab.add(controller2);
     tab.addNumber("Shooter1_velocity", this::getLowerEncoderVelocity);
     tab.addNumber("Shooter2_velocity", this::getUpperEncoderVelocity);
-    tab.addDoubleArray("velocities", () -> new double[]{getLowerEncoderVelocity(), getUpperEncoderVelocity()});
+    //tab.addDoubleArray("velocities", () -> new double[]{getLowerEncoderVelocity(), getUpperEncoderVelocity()});
+    tab.addNumber("motor_out", this::getOutput);
   }
 
   public double getLowerEncoderPosition() {
@@ -88,6 +91,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
   }
 
+  public void runShooter(double amt){
+    controller1.set(amt);
+    controller2.set(amt);
+    out = amt;
+  }
   public void enableShooter(boolean enable) {
 //    if (enable) lowerController.set(1.0);
 //    else lowerController.set(0.0);

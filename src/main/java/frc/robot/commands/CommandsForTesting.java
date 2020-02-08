@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -58,9 +60,10 @@ public class CommandsForTesting {
 
   public static class RunShooter extends CommandBase {
     private final ShooterSubsystem shooter;
-
-    public RunShooter(ShooterSubsystem shooter) {
+    private final DoubleSupplier amt;
+    public RunShooter(ShooterSubsystem shooter,DoubleSupplier amt) {
       this.shooter = shooter;
+      this.amt = amt;
       setName(RunShooter.class.getSimpleName());
       addRequirements(shooter);
       setSubsystem(shooter.getSubsystem());
@@ -68,12 +71,14 @@ public class CommandsForTesting {
 
     @Override
     public void execute() {
-      shooter.enableShooter(true);
+      //shooter.enableShooter(true);
+      shooter.runShooter(amt.getAsDouble());
     }
 
     @Override
     public void end(boolean interrupted) {
       shooter.enableShooter(false);
+      shooter.runShooter(0.0);
     }
   }
 
@@ -81,9 +86,11 @@ public class CommandsForTesting {
   public final RunFeeder colonRunner;
   public final RunShooter shooterRunner;
 
-  public CommandsForTesting(IntakeSubsystem intakeSubsystem, FeederSubsystem colonSubsystem, ShooterSubsystem shooterSubsystem) {
+  public CommandsForTesting(IntakeSubsystem intakeSubsystem, 
+  FeederSubsystem colonSubsystem, 
+  ShooterSubsystem shooterSubsystem,DoubleSupplier shooterOutput) {
     intakeRunner = new RunIntake(intakeSubsystem);
     colonRunner = new RunFeeder(colonSubsystem);
-    shooterRunner = new RunShooter(shooterSubsystem);
+    shooterRunner = new RunShooter(shooterSubsystem,shooterOutput);
   }
 }
