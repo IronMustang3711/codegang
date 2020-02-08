@@ -30,7 +30,7 @@ public class RobotContainer {
   private final CommandsForTesting testingCommands = new CommandsForTesting(intake, feedworks, shooter,this::shooterOutput);
 
   double shooterOutput(){
-    return joy.getThrottle()*0.25 + 0.5;
+    return -joy.getThrottle() * 0.25 + 0.5;
   }
   public RobotContainer() {
     configureButtonBindings();
