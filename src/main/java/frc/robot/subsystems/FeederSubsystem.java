@@ -20,8 +20,8 @@ import static frc.robot.Constants.*;
 
 public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
-  WPI_TalonSRX controller1 = new WPI_TalonSRX(1);
-  WPI_TalonSRX controller2 = new WPI_TalonSRX(4);
+  public final WPI_TalonSRX controller1 = new WPI_TalonSRX(1);
+  public final WPI_TalonSRX controller2 = new WPI_TalonSRX(4);
 
   public FeederSubsystem() {
     addChild("feeder1", controller1);
