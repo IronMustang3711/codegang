@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.AutoFeed;
 import frc.robot.commands.CommandsForTesting;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.stuff.SensorReset;
@@ -39,9 +40,13 @@ public class RobotContainer {
 
   CommandBase feedworksSequencer;
 
+  AutoFeed autoFeed = new AutoFeed(intake, feedworks);
+
   public RobotContainer() {
     configureButtonBindings();
     chassis.setDefaultCommand(driveWithJoystick);
+
+    intake.photoeyeObserver = autoFeed;
 
 
     var runInfeedHalfSpeed = new RunCommand(() -> intake.set(0.5), intake);
