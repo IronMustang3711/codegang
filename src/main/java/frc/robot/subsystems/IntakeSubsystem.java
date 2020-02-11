@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -11,12 +9,16 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.ResetSensors;
+import frc.robot.stuff.InfeedPhotoeyeObserver;
 import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
 public class IntakeSubsystem extends SubsystemBase implements SensorReset {
   private WPI_TalonSRX controller = new WPI_TalonSRX(15);
   DigitalInput photoEye;
+  boolean photoeyeBlocked = false;
+
+  public InfeedPhotoeyeObserver photoeyeObserver;
 
   public IntakeSubsystem() {
     addChild("intakeController", controller);
@@ -25,6 +27,19 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     controller.setSafetyEnabled(false);
     photoEye = new DigitalInput(0);
     setupShuffleboard();
+  }
+
+  @Override
+  public void periodic() {
+    var oldVal = photoeyeBlocked;
+    var newVal = photoeyeBlocked = photoEye.get();
+    if (photoeyeObserver != null) {
+      if (oldVal && !newVal)
+        photoeyeObserver.onPhotoeyeUnblocked();
+
+      else if (!oldVal && newVal)
+        photoeyeObserver.onPhotoeyeBlocked();
+    }
   }
 
   public boolean photoeyeBlocked() {
