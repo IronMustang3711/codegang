@@ -1,15 +1,19 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.stuff.SensorReset;
 
-public class PizzaWheelSubsytem extends SubsystemBase {
+public class PizzaWheelSubsytem extends SubsystemBase implements SensorReset {
 
   WPI_TalonSRX turner = new WPI_TalonSRX(6);
   Talon angler = new Talon(0);
@@ -41,5 +45,14 @@ public class PizzaWheelSubsytem extends SubsystemBase {
 
   public void periodic() {
 
+  }
+
+  @Override
+  public void resetSensors() {
+    ErrorCode errorCode = turner.getSensorCollection()
+                                .setQuadraturePosition(0, Constants.TalonConstants.DEFAULT_TIMEOUT);
+    if (errorCode != ErrorCode.OK) {
+      DriverStation.reportError("failure reseting Pizzawheel(turn) encoder: " + errorCode, false);
+    }
   }
 }

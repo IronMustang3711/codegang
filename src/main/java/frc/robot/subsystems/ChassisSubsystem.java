@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -7,16 +8,17 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
 import java.util.List;
 
-public class ChassisSubsystem extends SubsystemBase {
+public class ChassisSubsystem extends SubsystemBase implements SensorReset {
 
   private WPI_TalonSRX leftFront;
   private WPI_TalonSRX leftRear;
@@ -238,4 +240,18 @@ public class ChassisSubsystem extends SubsystemBase {
     rightRear.set(rightMotorOutput);
   }
 
+  @Override
+  public void resetSensors() {
+    for (var c : List.of(leftFront, rightFront)) {
+      ErrorCode errorCode = c.getSensorCollection().setQuadraturePosition(0, Constants.TalonConstants.DEFAULT_TIMEOUT);
+      if (errorCode != ErrorCode.OK) {
+        DriverStation.reportError("Problem reseting " + c.getName() + " in subsystem " + getSubsystem(), false);
+      }
+    }
+
+    gyro.reset();
+    ahrs.reset();
+    pigeon.setFusedHeading(0.0, 50);
+
+  }
 }

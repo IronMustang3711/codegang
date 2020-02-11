@@ -1,18 +1,23 @@
 package frc.robot.subsystems;
 
 import java.util.List;
+import java.util.stream.Stream;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
 import static frc.robot.Constants.*;
 
-public class FeederSubsystem extends SubsystemBase {
+public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
   WPI_TalonSRX controller1 = new WPI_TalonSRX(1);
   WPI_TalonSRX controller2 = new WPI_TalonSRX(4);
@@ -106,5 +111,15 @@ public class FeederSubsystem extends SubsystemBase {
 
   public boolean isEnabled() {
     return controller1.getMotorOutputVoltage() > 0.0 && controller2.getMotorOutputVoltage() > 0.0;
+  }
+
+  @Override
+  public void resetSensors() {
+    for (var c : List.of(controller1, controller2)) {
+      ErrorCode errorCode = c.getSensorCollection().setQuadraturePosition(0, TalonConstants.DEFAULT_TIMEOUT);
+      if (errorCode != ErrorCode.OK) {
+        DriverStation.reportError("Problem reseting " + c.getName() + " in subsystem " + getSubsystem(), false);
+      }
+    }
   }
 }

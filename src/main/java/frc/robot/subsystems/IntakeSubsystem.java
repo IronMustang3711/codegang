@@ -1,15 +1,19 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase implements SensorReset {
   private WPI_TalonSRX controller = new WPI_TalonSRX(15);
   DigitalInput photoEye;
 
@@ -56,5 +60,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public boolean isEnabled() {
     return controller.get() != 0.0;
+  }
+
+  @Override
+  public void resetSensors() {
+    //todo: this was not used in previous code. why?
+    controller.getSensorCollection().setQuadraturePosition(0, Constants.TalonConstants.DEFAULT_TIMEOUT);
+
+    ErrorCode errorCode = controller.setSelectedSensorPosition(0);
+    if (errorCode != ErrorCode.OK) {
+      DriverStation.reportError("error resetting encoders for subsystem " + IntakeSubsystem.class.getSimpleName(),
+                                false);
+      //TODO ef we get here, try again?
+    }
   }
 }
