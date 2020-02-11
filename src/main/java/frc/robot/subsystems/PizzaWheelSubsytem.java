@@ -11,14 +11,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PizzaWheelSubsytem extends SubsystemBase {
 
-  WPI_TalonSRX turner = new WPI_TalonSRX(0);
+  WPI_TalonSRX turner = new WPI_TalonSRX(6);
   Talon angler = new Talon(0);
-  ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kMXP);
+  ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 
   public PizzaWheelSubsytem() {
     setName("PizzaWheel");
     addChild("turner", turner);
     addChild("angler", angler);
+
+    turner.setInverted(false);
+    turner.setSensorPhase(true);
+
+    angler.setInverted(true);
 
     setupShuffleboardTab();
 
@@ -30,12 +35,11 @@ public class PizzaWheelSubsytem extends SubsystemBase {
     tab.add(angler);
 
     tab.addNumber("pizza encoder", () -> (double) turner.getSelectedSensorPosition());
+    tab.addDoubleArray("RGB", () -> new double[]{colorSensor.getRed(), colorSensor.getGreen(), colorSensor.getBlue()});
+    tab.addNumber("proximity", () -> colorSensor.getProximity());
   }
 
   public void periodic() {
-    SmartDashboard.putNumberArray("RBG",
-                                  new double[]{colorSensor.getRed(), colorSensor.getBlue(), colorSensor.getGreen()});
-    SmartDashboard.putNumber("Proximity", colorSensor.getProximity());
 
   }
 }
