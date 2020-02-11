@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
@@ -65,6 +66,8 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
     tab.addNumber("feeder2_vel", this::getSecondEncoderVelocity);
     tab.addNumber("feeder1_current", controller1::getStatorCurrent);
     tab.addNumber("feeder2_current", controller2::getStatorCurrent);
+    tab.add(new ResetSensors<>(this));
+
   }
 
   public double getFirstEncoderPosition() {

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants.TalonConstants;
+import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 
 import java.util.List;
@@ -50,6 +51,8 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
     tab.add(hookController);
     tab.addNumber("hookPosition", this::getEncoderPosition);
     tab.addNumber("hookCurrent", hookController::getStatorCurrent);
+    tab.add(new ResetSensors<>(this));
+
   }
 
   public double getEncoderPosition() {

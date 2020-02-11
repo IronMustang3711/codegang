@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
@@ -139,6 +140,8 @@ public class ChassisSubsystem extends SubsystemBase implements SensorReset {
 
     tab.addNumber("pigeonHeading", pigeon::getFusedHeading);
     // tab.addDoubleArray("headings", () -> new double[]{ahrs.getAngle(), gyro.getAngle()});
+    tab.add(new ResetSensors<>(this));
+
   }
 
   public double getLeftEncoderPosition() {

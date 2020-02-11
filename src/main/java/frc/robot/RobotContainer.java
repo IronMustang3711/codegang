@@ -8,7 +8,10 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.CommandsForTesting;
 import frc.robot.commands.DriveWithJoystick;
+import frc.robot.stuff.SensorReset;
 import frc.robot.subsystems.*;
+
+import java.util.List;
 
 import static frc.robot.commands.CommandsForTesting.*;
 
@@ -22,6 +25,8 @@ public class RobotContainer {
   private final WinchSubsystem winch = new WinchSubsystem();
   private final FeederSubsystem feedworks = new FeederSubsystem();
   private final PizzaWheelSubsytem pizzaWheel = new PizzaWheelSubsytem();
+
+  final List<SubsystemBase> subsystems = List.of(chassis, hook, intake, shooter, winch, feedworks, pizzaWheel);
 
   private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
 

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
@@ -37,6 +38,8 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     tab.addNumber("position", this::getEncoderPosition);
     tab.addNumber("velocity", this::getEncoderVelocity);
     tab.addBoolean("photoeye blocked", this::photoeyeBlocked);
+    tab.add(new ResetSensors<>(this));
+
   }
 
   private double getEncoderVelocity() {

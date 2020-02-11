@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 
 public class PizzaWheelSubsytem extends SubsystemBase implements SensorReset {
@@ -41,6 +42,8 @@ public class PizzaWheelSubsytem extends SubsystemBase implements SensorReset {
     tab.addNumber("pizza encoder", () -> (double) turner.getSelectedSensorPosition());
     tab.addDoubleArray("RGB", () -> new double[]{colorSensor.getRed(), colorSensor.getGreen(), colorSensor.getBlue()});
     tab.addNumber("proximity", () -> colorSensor.getProximity());
+    tab.add(new ResetSensors<>(this));
+
   }
 
   public void periodic() {

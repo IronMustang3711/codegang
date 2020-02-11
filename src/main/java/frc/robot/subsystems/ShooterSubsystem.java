@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
@@ -64,6 +65,7 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     tab.addNumber("Shooter2_velocity", this::getUpperEncoderVelocity);
     //tab.addDoubleArray("velocities", () -> new double[]{getLowerEncoderVelocity(), getUpperEncoderVelocity()});
     tab.addNumber("motor_out", this::getOutput);
+    tab.add(new ResetSensors<>(this));
   }
 
   public double getLowerEncoderPosition() {
