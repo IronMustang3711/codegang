@@ -103,6 +103,17 @@ public class FeederSubsystem extends SubsystemBase {
       controller2.set(0);
     }
   }
+  
+  // facilitates the vomit button
+  public void reverse(boolean enable) {
+    if(enable) {
+      controller1.set(-1.0);
+      controller2.set(-1.0);
+    } else {
+      controller1.set(0.0);
+      controller2.set(0.0);
+    }
+  }
 
   public boolean isEnabled() {
     return controller1.getMotorOutputVoltage() > 0.0 && controller2.getMotorOutputVoltage() > 0.0;

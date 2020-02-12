@@ -40,6 +40,14 @@ public class IntakeSubsystem extends SubsystemBase {
       set(0.0);
   }
 
+  // facilitates the vomit button
+  public void reverse(boolean enable) {
+    if (enable)
+      set(-1.0);
+    else
+      set(0.0);
+  }
+
   public void set(double output) {
     controller.set(output);
   }
