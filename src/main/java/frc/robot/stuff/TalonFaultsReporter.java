@@ -18,7 +18,7 @@ public class TalonFaultsReporter implements Runnable {
         StickyFaults stickyFaults = new StickyFaults();
         talon.getStickyFaults(stickyFaults);
         if (stickyFaults.hasAnyFault())
-            DriverStation.reportWarning("talon[" + talon.getName() + "] stickyFaults = " + stickyFaults, false);
+            DriverStation.reportWarning("talon[" + talon.getName() + ","+talon.getDescription()+" sticky faults!\n\t" + stickyFaults, false);
 
        
     }
@@ -27,7 +27,7 @@ public class TalonFaultsReporter implements Runnable {
     public void run() {
         talon.getFaults(faults);
         if (faults.hasAnyFault())
-            DriverStation.reportWarning("talon[" + talon.getName() + "] faults = " + faults, false);
+            DriverStation.reportWarning("[" + talon.getDescription() + "] faults\n\t " + faults, false);
 
     }
 

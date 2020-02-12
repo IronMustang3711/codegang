@@ -115,7 +115,7 @@ public class ChassisSubsystem extends SubsystemBase implements SensorReset {
     rightFront.setSensorPhase(true);
 
 
-    setupShuffleboard();
+   // setupShuffleboard();
   }
 
   private void setupShuffleboard() {

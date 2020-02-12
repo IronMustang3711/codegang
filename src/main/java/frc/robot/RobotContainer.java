@@ -67,7 +67,7 @@ public class RobotContainer {
     SmartDashboard.putData("feedworks thing", feedworksSequencer);
 
 
-    setupCamera();
+    //setupCamera();
     stopComplainingAboutJoysticsBeingUnplugged();
   }
 

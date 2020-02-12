@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Objects;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -37,10 +39,11 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
       if (oldVal && !newVal)
         photoeyeObserver.onPhotoeyeUnblocked();
 
-      else if (!oldVal && newVal)
+      else if (!oldVal && newVal){
         photoeyeObserver.onPhotoeyeBlocked();
     }
   }
+}
 
   public boolean photoeyeBlocked() {
     return photoEye.get();
@@ -54,6 +57,7 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     tab.addNumber("velocity", this::getEncoderVelocity);
     tab.addBoolean("photoeye blocked", this::photoeyeBlocked);
     tab.add(new ResetSensors<>(this));
+    tab.addString("current command", ()-> Objects.toString(getCurrentCommand()));
 
   }
 

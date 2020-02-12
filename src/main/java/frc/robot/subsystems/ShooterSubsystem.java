@@ -13,12 +13,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.ResetSensors;
+import frc.robot.commands.ShooterVelocityControl;
 import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
 public class ShooterSubsystem extends SubsystemBase implements SensorReset {
-  private WPI_TalonSRX controller1 = new WPI_TalonSRX(5);
-  private WPI_TalonSRX controller2 = new WPI_TalonSRX(27); //lower
+  public final WPI_TalonSRX controller1 = new WPI_TalonSRX(5);
+  public WPI_TalonSRX controller2 = new WPI_TalonSRX(27); //lower
   double out = 0.0;
 
   double getOutput() {
@@ -66,6 +67,7 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     //tab.addDoubleArray("velocities", () -> new double[]{getLowerEncoderVelocity(), getUpperEncoderVelocity()});
     tab.addNumber("motor_out", this::getOutput);
     tab.add(new ResetSensors<>(this));
+    tab.add(new ShooterVelocityControl(this));
   }
 
   public double getLowerEncoderPosition() {

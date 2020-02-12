@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.stuff.InfeedPhotoeyeObserver;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -25,9 +26,16 @@ public class AutoFeed implements InfeedPhotoeyeObserver {
 
     var infeedHalfSpeed = new RunInfeedPercentOutput(infeedSubsystem, 0.5);
     var feedworksCmd = new RunFeedworksPercentOutput(feedworks, 0.5, 1.0);
-    var infeedAndFeedworks = new ParallelCommandGroup(infeedHalfSpeed, feedworksCmd).withTimeout(1.0);
-    if (prevInfeedCommand != null) return infeedAndFeedworks.andThen(prevInfeedCommand);
-    else return infeedAndFeedworks;
+    Command infeedAndFeedworks = new ParallelCommandGroup(infeedHalfSpeed, feedworksCmd).withTimeout(1.0);
+    if (prevInfeedCommand != null) infeedAndFeedworks = infeedAndFeedworks.andThen(prevInfeedCommand);
+  
+   return infeedAndFeedworks.alongWith(new StartEndCommand(()->{
+      System.out.println("start");
+    }
+    ,
+    ()->{
+      System.out.println("end");
+    }));
   }
 
   @Override
