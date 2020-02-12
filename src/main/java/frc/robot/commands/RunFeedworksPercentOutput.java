@@ -8,6 +8,10 @@ public class RunFeedworksPercentOutput extends CommandBase {
   final double pctOut1;
   final double pctOut2;
 
+  public RunFeedworksPercentOutput(FeederSubsystem feedworks, double pctOut) {
+    this(feedworks, pctOut, pctOut);
+  }
+
   public RunFeedworksPercentOutput(FeederSubsystem feedworks, double pctOut1, double pctOut2) {
     this.feedworks = feedworks;
     this.pctOut1 = pctOut1;
@@ -17,8 +21,7 @@ public class RunFeedworksPercentOutput extends CommandBase {
 
   @Override
   public void execute() {
-    feedworks.controller1.set(pctOut1);
-    feedworks.controller2.set(pctOut2);
+    feedworks.setMotorOutputs(pctOut1, pctOut2);
   }
 
   @Override

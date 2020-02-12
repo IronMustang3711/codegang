@@ -102,25 +102,13 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
   }
 
-  public void enable(boolean enable) {
-    if (enable) {
-      controller1.set(1.0);
-      controller2.set(1.0);
-    } else {
-      controller1.set(0);
-      controller2.set(0);
-    }
+  public void setMotorOutputs(double first) {
+    setMotorOutputs(first, first);
   }
-  
-  // facilitates the vomit button
-  public void reverse(boolean enable) {
-    if(enable) {
-      controller1.set(-1.0);
-      controller2.set(-1.0);
-    } else {
-      controller1.set(0.0);
-      controller2.set(0.0);
-    }
+
+  public void setMotorOutputs(double first, double second) {
+    controller1.set(first);
+    controller2.set(second);
   }
 
   public boolean isEnabled() {

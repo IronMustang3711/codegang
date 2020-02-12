@@ -8,15 +8,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.*;
-import frc.robot.stuff.SensorReset;
 import frc.robot.subsystems.*;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 import java.util.List;
-
-import static frc.robot.commands.CommandsForTesting.*;
 
 public class RobotContainer {
   Joystick joy = new Joystick(0);
@@ -33,8 +30,8 @@ public class RobotContainer {
 
   private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
 
-  private final CommandsForTesting testingCommands = new CommandsForTesting(intake, feedworks, shooter,
-                                                                            this::shooterOutput);
+//  private final CommandsForTesting testingCommands = new CommandsForTesting(intake, feedworks, shooter,
+//                                                                            this::shooterOutput);
 
   double shooterOutput() {
     return -joy.getThrottle() * 0.25 + 0.5;
@@ -52,14 +49,14 @@ public class RobotContainer {
 
 
     var runInfeedHalfSpeed = new RunCommand(() -> intake.set(0.5), intake);
-    var runFeedworks = new RunCommand(() -> feedworks.enable(true), feedworks);
+    var runFeedworks = new RunFeedworksPercentOutput(feedworks, 1.0);
 
-    var stopBoth = new RunCommand(() -> {
-      intake.enableIntake(false);
-      feedworks.enable(false);
-    });
+//    var stopBoth = new RunCommand(() -> {
+//      intake.enableIntake(false);
+//      feedworks.enable(false);
+//    });
 
-    var runFor1Sec = runInfeedHalfSpeed.alongWith(runFeedworks).withTimeout(0.5).andThen(stopBoth);
+    var runFor1Sec = runInfeedHalfSpeed.alongWith(runFeedworks).withTimeout(0.5);
     feedworksSequencer = new WaitUntilCommand(intake::photoeyeBlocked)
                            .andThen(runFor1Sec);
 
@@ -80,19 +77,19 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    new JoystickButton(joy, 10).toggleWhenActive(testingCommands.intakeRunner);
-    new JoystickButton(joy, 2).whileHeld(testingCommands.colonRunner);
+    new JoystickButton(joy, 10).toggleWhenActive(new RunInfeedPercentOutput(intake, 1.0));
+    new JoystickButton(joy, 2).whileHeld(new RunFeedworksPercentOutput(feedworks, 1.0));
     var shootSequence = new ParallelCommandGroup(
-      new RunShooter(shooter, this::shooterOutput),
+      new RunShooterPercentOutput(shooter, this::shooterOutput),
       new SequentialCommandGroup(
         new ParallelCommandGroup(
           new InstantCommand(() -> {
             intake.enableIntake(false);
-            feedworks.enable(false);
+            feedworks.setMotorOutputs(0.0);
           }, intake, feedworks),
           new WaitCommand(1.0)),
-        new ParallelCommandGroup(new RunFeeder(feedworks),
-                                 new WaitCommand(0.3).andThen(new RunIntake(intake, 0.5)))));
+        new ParallelCommandGroup(new RunFeedworksPercentOutput(feedworks, 1.0),
+                                 new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
 
 
     new JoystickButton(joy, 1).whileHeld(shootSequence);

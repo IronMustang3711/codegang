@@ -107,19 +107,6 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     out = amt;
   }
 
-  public void enableShooter(boolean enable) {
-//    if (enable) lowerController.set(1.0);
-//    else lowerController.set(0.0);
-    if (enable) {
-      controller1.set(1.0);
-      controller2.set(1.0);
-    } else {
-      controller1.set(0.0);
-      controller2.set(0.0);
-    }
-
-  }
-
   public boolean isEnabled() {
     return controller1.get() != 0.0;
   }
