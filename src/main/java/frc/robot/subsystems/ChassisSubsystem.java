@@ -1,21 +1,25 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ResetSensors;
+import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
 import java.util.List;
 
-public class ChassisSubsystem extends SubsystemBase {
+public class ChassisSubsystem extends SubsystemBase implements SensorReset {
 
   private WPI_TalonSRX leftFront;
   private WPI_TalonSRX leftRear;
@@ -25,6 +29,8 @@ public class ChassisSubsystem extends SubsystemBase {
 
   AHRS ahrs;
   ADXRS450_Gyro gyro;
+
+  PigeonIMU pigeon;
 
   public ChassisSubsystem() {
     leftFront = new WPI_TalonSRX(3);
@@ -39,6 +45,8 @@ public class ChassisSubsystem extends SubsystemBase {
 
     ahrs = new AHRS(SPI.Port.kMXP);
     gyro = new ADXRS450_Gyro();
+
+    pigeon = new PigeonIMU(rightRear);
 
     addChild("left1", leftFront);
     addChild("left2", leftRear);
@@ -116,13 +124,13 @@ public class ChassisSubsystem extends SubsystemBase {
     tab.addNumber("right_encoder", this::getRightEncoderPosition);
     tab.addNumber("left_vel", this::getLeftEncoderVelocity);
     tab.addNumber("right_vel", this::getRightEncoderVelocity);
-    tab.addDoubleArray("vels", () -> new double[]{getLeftEncoderVelocity(), getRightEncoderVelocity()});
+    // tab.addDoubleArray("vels", () -> new double[]{getLeftEncoderVelocity(), getRightEncoderVelocity()});
     tab.addNumber("left1_current", leftFront::getStatorCurrent);
     tab.addNumber("left2_current", leftRear::getStatorCurrent);
     tab.addNumber("right1_current", rightFront::getStatorCurrent);
     tab.addNumber("right2_current", rightRear::getStatorCurrent);
-    tab.addDoubleArray("currents", () -> new double[]{leftFront.getStatorCurrent(), leftRear.getStatorCurrent(),
-                                                      rightFront.getStatorCurrent(), rightRear.getStatorCurrent()});
+//    tab.addDoubleArray("currents", () -> new double[]{leftFront.getStatorCurrent(), leftRear.getStatorCurrent(),
+//                                                      rightFront.getStatorCurrent(), rightRear.getStatorCurrent()});
     tab.add(leftFront);
     tab.add(leftRear);
     tab.add(rightFront);
@@ -130,7 +138,10 @@ public class ChassisSubsystem extends SubsystemBase {
     tab.add(ahrs);
     tab.add(gyro);
 
-    tab.addDoubleArray("headings", () -> new double[]{ahrs.getAngle(), gyro.getAngle()});
+    tab.addNumber("pigeonHeading", pigeon::getFusedHeading);
+    // tab.addDoubleArray("headings", () -> new double[]{ahrs.getAngle(), gyro.getAngle()});
+    tab.add(new ResetSensors<>(this));
+
   }
 
   public double getLeftEncoderPosition() {
@@ -232,4 +243,18 @@ public class ChassisSubsystem extends SubsystemBase {
     rightRear.set(rightMotorOutput);
   }
 
+  @Override
+  public void resetSensors() {
+    for (var c : List.of(leftFront, rightFront)) {
+      ErrorCode errorCode = c.getSensorCollection().setQuadraturePosition(0, Constants.TalonConstants.DEFAULT_TIMEOUT);
+      if (errorCode != ErrorCode.OK) {
+        DriverStation.reportError("Problem reseting " + c.getName() + " in subsystem " + getSubsystem(), false);
+      }
+    }
+
+    gyro.reset();
+    ahrs.reset();
+    pigeon.setFusedHeading(0.0, 50);
+
+  }
 }

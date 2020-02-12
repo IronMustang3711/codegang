@@ -1,14 +1,20 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants.TalonConstants;
+import frc.robot.commands.ResetSensors;
+import frc.robot.stuff.SensorReset;
 
-public class HookSubsystem extends PIDSubsystem {
+import java.util.List;
+
+public class HookSubsystem extends PIDSubsystem implements SensorReset {
   private WPI_TalonSRX hookController;
   static final double kP = 1.0;
   static final double kI = 0.0;
@@ -45,6 +51,8 @@ public class HookSubsystem extends PIDSubsystem {
     tab.add(hookController);
     tab.addNumber("hookPosition", this::getEncoderPosition);
     tab.addNumber("hookCurrent", hookController::getStatorCurrent);
+    tab.add(new ResetSensors<>(this));
+
   }
 
   public double getEncoderPosition() {
@@ -76,4 +84,12 @@ public class HookSubsystem extends PIDSubsystem {
     return hookController.getSelectedSensorPosition();
   }
 
+  @Override
+  public void resetSensors() {
+    ErrorCode errorCode = hookController.getSensorCollection().setQuadraturePosition(0, TalonConstants.DEFAULT_TIMEOUT);
+    if (errorCode != ErrorCode.OK) {
+      DriverStation.reportError("Problem reseting " + hookController.getName() + " in subsystem " + getSubsystem(),
+                                false);
+    }
+  }
 }

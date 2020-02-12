@@ -13,16 +13,11 @@ public class WinchSubsystem extends SubsystemBase {
 
     public void winchForward() {
 
-        winch.setInverted(false);
-        winch.setVoltage(10.0);
-
+        winch.set(1.0);
     }
 
     public void winchReverse() {
-
-        winch.setInverted(true);
-        winch.setVoltage(-10.0);
-
+        winch.set(-0.4);
     }
 
     public void winchDisable() {
