@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -12,6 +13,9 @@ import frc.robot.commands.DriveWithJoystick;
 import frc.robot.stuff.SensorReset;
 import frc.robot.subsystems.*;
 
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.util.List;
 
 import static frc.robot.commands.CommandsForTesting.*;
@@ -66,16 +70,7 @@ public class RobotContainer {
 
 
     setupCamera();
-
-//    CommandScheduler.getInstance().onCommandInitialize(c -> {
-//      DriverStation.reportWarning("INIT: " + c.getName(), false);
-//    });
-//    CommandScheduler.getInstance().onCommandFinish(c -> {
-//      DriverStation.reportWarning("FINISH: " + c.getName(), false);
-//    });
-    // CommandScheduler.getInstance().onCommandInterrupt(c -> {
-    //   DriverStation.reportWarning("INTERRUPT: " + c.getName(), false);
-    // });
+    stopComplainingAboutJoysticsBeingUnplugged();
   }
 
   UsbCamera cam;
@@ -128,5 +123,19 @@ public class RobotContainer {
     var cmd = new StartEndCommand(init, end, chassis);
     cmd.schedule();
 
+  }
+
+  static void stopComplainingAboutJoysticsBeingUnplugged() {
+    try {
+      Field nextMessageTime = DriverStation.class.getDeclaredField("m_nextMessageTime");
+      nextMessageTime.setAccessible(true);
+      nextMessageTime.setDouble(DriverStation.getInstance(), Double.MAX_VALUE);
+    } catch (NoSuchFieldException | IllegalAccessException | InaccessibleObjectException e) {
+      e.fillInStackTrace();
+      var ccw = new CharArrayWriter(120);
+      e.printStackTrace(new PrintWriter(ccw));
+      DriverStation.reportError(new String(ccw.toCharArray()), e.getStackTrace());
+
+    }
   }
 }
