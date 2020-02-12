@@ -21,24 +21,21 @@ import java.util.List;
 
 public class ChassisSubsystem extends SubsystemBase implements SensorReset {
 
-  private WPI_TalonSRX leftFront;
-  private WPI_TalonSRX leftRear;
-  private WPI_TalonSRX rightFront;
-  private WPI_TalonSRX rightRear;
+  private WPI_TalonSRX leftFront = new WPI_TalonSRX(3);
+  private WPI_TalonSRX leftRear = new WPI_TalonSRX(10);
+  private WPI_TalonSRX rightFront = new WPI_TalonSRX(13);
+  private WPI_TalonSRX rightRear = new WPI_TalonSRX(11);
   // private DifferentialDrive drive;
 
+  final List<WPI_TalonSRX> talons = List.of(leftFront, leftRear, rightFront, rightRear);
   AHRS ahrs;
   ADXRS450_Gyro gyro;
 
   PigeonIMU pigeon;
 
   public ChassisSubsystem() {
-    leftFront = new WPI_TalonSRX(3);
-    leftRear = new WPI_TalonSRX(10);
 
 
-    rightFront = new WPI_TalonSRX(13);
-    rightRear = new WPI_TalonSRX(11);
     //drive = new DifferentialDrive(leftFront, rightFront);
 //    drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear),
 //                                  new SpeedControllerGroup(rightFront, rightRear));
@@ -61,7 +58,7 @@ public class ChassisSubsystem extends SubsystemBase implements SensorReset {
 //
 //    drive.setRightSideInverted(false);
 
-    for (var talon : List.of(leftFront, leftRear, rightFront, rightRear)) {
+    for (var talon : talons) {
 
       talon.setSafetyEnabled(true);
       talon.setExpiration(0.5);
