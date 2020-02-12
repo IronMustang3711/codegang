@@ -29,4 +29,7 @@ public class WinchSubsystem extends SubsystemBase {
         return winch.getMotorOutputVoltage() > 0.0;
     }
 
+    public void setOutput(double output) {
+        winch.set(output);
+    }
 }

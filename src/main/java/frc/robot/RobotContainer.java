@@ -91,20 +91,17 @@ public class RobotContainer {
         new ParallelCommandGroup(new RunFeedworksPercentOutput(feedworks, 1.0),
                                  new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
 
+    shootSequence.setName("shoot_sequence");
 
     new JoystickButton(joy, 1).whileHeld(shootSequence);
-    new JoystickButton(joy, 4).whileHeld(
-      new StartEndCommand(() -> hook.setOutput(-0.25), () -> hook.setOutput(0.0), hook));
-    new JoystickButton(joy, 6).whileHeld(
-      new StartEndCommand(() -> hook.setOutput(0.25), () -> hook.setOutput(0.0), hook));
+    new JoystickButton(joy, 4).whileHeld(new RunHookPercentOutput(hook, -0.25));
+    new JoystickButton(joy, 6).whileHeld(new RunHookPercentOutput(hook, 0.25));
     new JoystickButton(joy, 7).whileHeld(winch::winchForward).whenReleased(winch::winchDisable);
     new JoystickButton(joy, 8).whileHeld(winch::winchReverse).whenReleased(winch::winchDisable);
 
     new JoystickButton(joy, 9).whileHeld(new RunInfeedPercentOutput(intake, -1.0)
-                                           .alongWith(new RunFeedworksPercentOutput(feedworks, -1.0, -1.0)));
-    // below only may or may not work, sort of ham fisted
-//    new JoystickButton(joy, 9).whileHeld(new StartEndCommand(() -> feedworks.reverse(true), () -> feedworks.reverse(false)));
-//    new JoystickButton(joy, 9).whileHeld(new StartEndCommand(() -> intake.reverse(true), () -> intake.reverse(false)));
+                                           .alongWith(new RunFeedworksPercentOutput(feedworks, -1.0)));
+
   }
 
   /**
