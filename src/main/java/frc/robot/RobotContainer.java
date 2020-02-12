@@ -7,9 +7,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AutoFeed;
-import frc.robot.commands.CommandsForTesting;
-import frc.robot.commands.DriveWithJoystick;
+import frc.robot.commands.*;
 import frc.robot.stuff.SensorReset;
 import frc.robot.subsystems.*;
 
@@ -102,11 +100,14 @@ public class RobotContainer {
       new StartEndCommand(() -> hook.setOutput(-0.25), () -> hook.setOutput(0.0), hook));
     new JoystickButton(joy, 6).whileHeld(
       new StartEndCommand(() -> hook.setOutput(0.25), () -> hook.setOutput(0.0), hook));
-    new JoystickButton(joy, 7).whileHeld(winch::winchForward).whenReleased(() -> winch.winchDisable());
+    new JoystickButton(joy, 7).whileHeld(winch::winchForward).whenReleased(winch::winchDisable);
     new JoystickButton(joy, 8).whileHeld(winch::winchReverse).whenReleased(winch::winchDisable);
+
+    new JoystickButton(joy, 9).whileHeld(new RunInfeedPercentOutput(intake, -1.0)
+                                           .alongWith(new RunFeedworksPercentOutput(feedworks, -1.0, -1.0)));
     // below only may or may not work, sort of ham fisted
-    new JoystickButton(joy, 9).whileHeld(new StartEndCommand(() -> feedworks.reverse(true), () -> feedworks.reverse(false)));
-    new JoystickButton(joy, 9).whileHeld(new StartEndCommand(() -> intake.reverse(true), () -> intake.reverse(false)));
+//    new JoystickButton(joy, 9).whileHeld(new StartEndCommand(() -> feedworks.reverse(true), () -> feedworks.reverse(false)));
+//    new JoystickButton(joy, 9).whileHeld(new StartEndCommand(() -> intake.reverse(true), () -> intake.reverse(false)));
   }
 
   /**
