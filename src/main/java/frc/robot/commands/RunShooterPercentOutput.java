@@ -12,6 +12,7 @@ public class RunShooterPercentOutput extends CommandBase {
   public RunShooterPercentOutput(ShooterSubsystem shooter, DoubleSupplier outputSupplier) {
     this.shooter = shooter;
     this.outputSupplier = outputSupplier;
+    addRequirements(shooter);
   }
 
   @Override
