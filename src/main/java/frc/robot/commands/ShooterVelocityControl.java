@@ -14,13 +14,12 @@ public class ShooterVelocityControl extends CommandBase {
   private final NetworkTableEntry output1;
   private final NetworkTableEntry error2;
   private final NetworkTableEntry output2;
+  private final NetworkTableEntry setpoint;
 
   public ShooterVelocityControl(ShooterSubsystem shooter) {
     this.shooter = shooter;
     addRequirements(shooter);
 
-
-    shooter.setpoint.setDefaultDouble(1000.0);
 
     var tab = Shuffleboard.getTab(ShooterSubsystem.class.getSimpleName());
     var errors = tab.getLayout("error", BuiltInLayouts.kList);
@@ -30,6 +29,8 @@ public class ShooterVelocityControl extends CommandBase {
     var outs = tab.getLayout("output%");
     output1 = outs.add("output1", 0.0).getEntry();
     output2 = outs.add("output2", 0.0).getEntry();
+
+    setpoint = tab.add("setpoint", 0.0).getEntry();
 
 
   }
@@ -51,7 +52,7 @@ public class ShooterVelocityControl extends CommandBase {
 
   @Override
   public void execute() {
-    double sp = shooter.setpoint.getDouble(0.0);
+    double sp = setpoint.getDouble(0.0);
 
     shooter.controller1.set(ControlMode.Velocity, sp);
     shooter.controller2.set(ControlMode.Velocity, sp);

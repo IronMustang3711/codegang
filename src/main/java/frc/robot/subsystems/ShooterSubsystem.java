@@ -27,7 +27,6 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
   NetworkTableEntry[] vels;
   NetworkTableEntry[] outs;
   NetworkTableEntry enableTelem;
-  public NetworkTableEntry setpoint;
 
   double getOutput() {
     return out;
@@ -94,8 +93,6 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     var posContainer = tab.getLayout("positions", BuiltInLayouts.kList);
     positions[0] = posContainer.add("upper", 0.0).getEntry();
     positions[1] = posContainer.add("lower", 0.0).getEntry();
-
-    setpoint = tab.add("setpoint", 0.0).getEntry();
 
   }
 
