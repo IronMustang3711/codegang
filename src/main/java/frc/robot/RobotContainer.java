@@ -30,11 +30,8 @@ public class RobotContainer {
 
   private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
 
-//  private final CommandsForTesting testingCommands = new CommandsForTesting(intake, feedworks, shooter,
-//                                                                            this::shooterOutput);
-
   double shooterOutput() {
-    return -joy.getThrottle() * 0.25 + 0.5;
+    return -joy.getThrottle() * 0.25 + 0.75;
   }
 
   CommandBase feedworksSequencer;
@@ -48,23 +45,16 @@ public class RobotContainer {
     intake.photoeyeObserver = autoFeed;
 
 
-    var runInfeedHalfSpeed = new RunCommand(() -> intake.set(0.5), intake);
-    var runFeedworks = new RunFeedworksPercentOutput(feedworks, 1.0);
-
-//    var stopBoth = new RunCommand(() -> {
-//      intake.enableIntake(false);
-//      feedworks.enable(false);
-//    });
-
-    var runFor1Sec = runInfeedHalfSpeed.alongWith(runFeedworks).withTimeout(0.5);
     feedworksSequencer = new WaitUntilCommand(intake::photoeyeBlocked)
-                           .andThen(runFor1Sec);
+                           .andThen(new RunInfeedPercentOutput(intake, 0.5)
+                                      .alongWith(new RunFeedworksPercentOutput(feedworks, 1.0))
+                                      .withTimeout(0.5));
 
 
     SmartDashboard.putData("feedworks thing", feedworksSequencer);
 
-    CommandScheduler.getInstance().onCommandInitialize(c->DriverStation.reportWarning("cmd init: "+c, false));
-    CommandScheduler.getInstance().onCommandExecute(c->DriverStation.reportWarning("cmd exec: "+c, false));
+//    CommandScheduler.getInstance().onCommandInitialize(c->DriverStation.reportWarning("cmd init: "+c, false));
+//    CommandScheduler.getInstance().onCommandExecute(c->DriverStation.reportWarning("cmd exec: "+c, false));
 
 
     //setupCamera();
@@ -81,7 +71,9 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     new JoystickButton(joy, 10).toggleWhenActive(new RunInfeedPercentOutput(intake, 1.0));
+
     new JoystickButton(joy, 2).whileHeld(new RunFeedworksPercentOutput(feedworks, 1.0));
+
     var shootSequence = new ParallelCommandGroup(
       new RunShooterPercentOutput(shooter, this::shooterOutput),
       new SequentialCommandGroup(
