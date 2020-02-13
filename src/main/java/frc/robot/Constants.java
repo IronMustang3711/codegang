@@ -17,6 +17,7 @@ package frc.robot;
  */
 public final class Constants {
     public static class TalonConstants {
+        public static final int PRIMARY_SLOT = 0;
         public static final int PRIMARY_PID = 0;
         public static final int DEFAULT_TIMEOUT = 10;
     }
