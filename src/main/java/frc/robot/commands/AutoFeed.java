@@ -1,10 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.stuff.InfeedPhotoeyeObserver;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -24,18 +21,13 @@ public class AutoFeed implements InfeedPhotoeyeObserver {
 
   Command createAutoFeedCommandSequence() {
 
-    var infeedHalfSpeed = new RunInfeedPercentOutput(infeedSubsystem, 0.5);
-    var feedworksCmd = new RunFeedworksPercentOutput(feedworks, 0.5, 1.0);
-    Command infeedAndFeedworks = new ParallelCommandGroup(infeedHalfSpeed, feedworksCmd).withTimeout(0.5);
-    if (prevInfeedCommand != null) infeedAndFeedworks = infeedAndFeedworks.andThen(prevInfeedCommand);
-  
-   return infeedAndFeedworks.alongWith(new StartEndCommand(()->{
-      System.out.println("start");
-    }
-    ,
-    ()->{
-      System.out.println("end");
-    }));
+    var infeedHalfSpeed = new RunInfeedPercentOutput(infeedSubsystem, 0.4);
+    var feedworksCmd = new RunFeedworksPercentOutput(feedworks, 0.5, 0.4);
+    Command infeedAndFeedworks = new ParallelCommandGroup(infeedHalfSpeed, feedworksCmd).withTimeout(0.8);
+    if (prevInfeedCommand != null)
+      infeedAndFeedworks = infeedAndFeedworks.andThen(new ScheduleCommand(prevInfeedCommand));
+
+    return infeedAndFeedworks;
   }
 
   @Override
@@ -52,10 +44,7 @@ public class AutoFeed implements InfeedPhotoeyeObserver {
     double elapsed = CommandScheduler.getInstance().timeSinceScheduled(autoFeedCommand);
     if (elapsed != -1.0)
       DriverStation.reportWarning("photoeye unblocked " + elapsed + "s after autofeed start", false);
-    // if(prevInfeedCommand != null) prevInfeedCommand.schedule();
   }
-
-
 }
 
 
