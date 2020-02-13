@@ -27,7 +27,7 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
   NetworkTableEntry[] vels;
   NetworkTableEntry[] outs;
   NetworkTableEntry enableTelem;
-  NetworkTableEntry setpoint;
+  public NetworkTableEntry setpoint;
 
   double getOutput() {
     return out;
