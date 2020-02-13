@@ -63,6 +63,9 @@ public class RobotContainer {
 
     SmartDashboard.putData("feedworks thing", feedworksSequencer);
 
+    CommandScheduler.getInstance().onCommandInitialize(c->DriverStation.reportWarning("cmd init: "+c, false));
+    CommandScheduler.getInstance().onCommandExecute(c->DriverStation.reportWarning("cmd exec: "+c, false));
+
 
     //setupCamera();
     stopComplainingAboutJoysticsBeingUnplugged();
