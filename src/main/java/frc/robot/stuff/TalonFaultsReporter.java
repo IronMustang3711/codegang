@@ -9,30 +9,30 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class TalonFaultsReporter implements Runnable {
 
-    private Faults faults = new Faults();
+  private Faults faults = new Faults();
 
-    private WPI_TalonSRX talon;
+  private WPI_TalonSRX talon;
 
-     TalonFaultsReporter(WPI_TalonSRX talon) {
-        this.talon = talon;
-        StickyFaults stickyFaults = new StickyFaults();
-        talon.getStickyFaults(stickyFaults);
-        if (stickyFaults.hasAnyFault())
-            DriverStation.reportWarning("talon[" + talon.getName() + ","+talon.getDescription()+" sticky faults!\n\t" + stickyFaults, false);
+  TalonFaultsReporter(WPI_TalonSRX talon) {
+    this.talon = talon;
+    StickyFaults stickyFaults = new StickyFaults();
+    talon.getStickyFaults(stickyFaults);
+    if (stickyFaults.hasAnyFault())
+      DriverStation.reportWarning("[" + talon.getDescription() + " sticky faults!->" + stickyFaults, false);
 
-       
-    }
 
-    @Override
-    public void run() {
-        talon.getFaults(faults);
-        if (faults.hasAnyFault())
-            DriverStation.reportWarning("[" + talon.getDescription() + "] faults\n\t " + faults, false);
+  }
 
-    }
+  @Override
+  public void run() {
+    talon.getFaults(faults);
+    if (faults.hasAnyFault())
+      DriverStation.reportWarning("[" + talon.getDescription() + "] faults->" + faults, false);
 
-	public static void instrument(WPI_TalonSRX talon) {
-        CommandScheduler.getInstance().addButton(new TalonFaultsReporter(talon));
-	}
+  }
+
+  public static void instrument(WPI_TalonSRX talon) {
+    CommandScheduler.getInstance().addButton(new TalonFaultsReporter(talon));
+  }
 
 }
