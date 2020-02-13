@@ -1,15 +1,14 @@
 package frc.robot.subsystems;
 
-import java.util.List;
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.ResetSensors;
@@ -17,10 +16,18 @@ import frc.robot.commands.ShooterVelocityControl;
 import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
+import java.util.List;
+
 public class ShooterSubsystem extends SubsystemBase implements SensorReset {
-  public final WPI_TalonSRX controller1 = new WPI_TalonSRX(5);
+  public final WPI_TalonSRX controller1 = new WPI_TalonSRX(5); // upper
   public WPI_TalonSRX controller2 = new WPI_TalonSRX(27); //lower
   double out = 0.0;
+
+  NetworkTableEntry[] positions;
+  NetworkTableEntry[] vels;
+  NetworkTableEntry[] outs;
+  NetworkTableEntry enableTelem;
+  NetworkTableEntry setpoint;
 
   double getOutput() {
     return out;
@@ -52,22 +59,44 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     controller1.setSensorPhase(true);
     controller2.setSensorPhase(true);
 
-    addChild("Shooter1", controller1);
-    addChild("Shooter2", controller2);
+    addChild("Shooter1(upper)", controller1);
+    addChild("Shooter2(lower)", controller2);
 
     setupShuffleboard();
   }
 
   private void setupShuffleboard() {
+    outs = new NetworkTableEntry[2];
+    vels = new NetworkTableEntry[2];
+    positions = new NetworkTableEntry[2];
+
     var tab = Shuffleboard.getTab(ShooterSubsystem.class.getSimpleName());
-    tab.add(controller1);
-    tab.add(controller2);
-    tab.addNumber("Shooter1_velocity", this::getLowerEncoderVelocity);
-    tab.addNumber("Shooter2_velocity", this::getUpperEncoderVelocity);
-    //tab.addDoubleArray("velocities", () -> new double[]{getLowerEncoderVelocity(), getUpperEncoderVelocity()});
+    enableTelem = tab.add("enable telem", true)
+                     .withWidget(BuiltInWidgets.kToggleButton)
+                     .getEntry();
+
     tab.addNumber("motor_out", this::getOutput);
     tab.add(new ResetSensors<>(this));
     tab.add(new ShooterVelocityControl(this));
+
+    var velsContainer = tab.getLayout("velocity", BuiltInLayouts.kList);
+    vels[0] = velsContainer.add("upper(1)", 0.0).getEntry();
+    vels[1] = velsContainer.add("lower(2)", 0.0).getEntry();
+
+    var controllersContainer = tab.getLayout("controllers", BuiltInLayouts.kList);
+    controllersContainer.add(controller1);
+    controllersContainer.add(controller2);
+
+    var outsContainer = tab.getLayout("outputs", BuiltInLayouts.kList);
+    outs[0] = outsContainer.add("upper", 0.0).getEntry();
+    outs[1] = outsContainer.add("lower", 0.0).getEntry();
+
+    var posContainer = tab.getLayout("positions", BuiltInLayouts.kList);
+    positions[0] = posContainer.add("upper", 0.0).getEntry();
+    positions[1] = posContainer.add("lower", 0.0).getEntry();
+
+    setpoint = tab.add("setpoint", 0.0).getEntry();
+
   }
 
   public double getLowerEncoderPosition() {
@@ -88,17 +117,14 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
 
   @Override
   public void periodic() {
-    // double[] positions = {getLowerEncoderPosition(), getUpperEncoderPosition()};
-    // SmartDashboard.putNumber("lowerShooter_position", positions[0]);
-    // SmartDashboard.putNumber("upperShooter_position", positions[1]);
-    // SmartDashboard.putNumberArray("shooter_position", positions);
-
-    // double[] vels = {getLowerEncoderVelocity(), getUpperEncoderVelocity()};
-    // SmartDashboard.putNumber("lowerShooter_velocity", vels[0]);
-    // SmartDashboard.putNumber("upperShooter_velocity", vels[1]);
-    // SmartDashboard.putNumberArray("shooter_velocity", vels);
-
-
+    if (enableTelem != null && enableTelem.getBoolean(true)) {
+      vels[0].setDouble(getUpperEncoderVelocity());
+      vels[1].setDouble(getLowerEncoderVelocity());
+      outs[0].setDouble(controller1.getMotorOutputPercent());
+      outs[1].setDouble(controller2.getMotorOutputPercent());
+      positions[0].setDouble(getUpperEncoderPosition());
+      positions[1].setDouble(getLowerEncoderPosition());
+    }
   }
 
   public void runShooter(double amt) {
