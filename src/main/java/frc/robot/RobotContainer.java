@@ -42,7 +42,8 @@ public class RobotContainer {
     configureButtonBindings();
     chassis.setDefaultCommand(driveWithJoystick);
 
-    intake.photoeyeObserver = autoFeed;
+    autoFeed.schedule();
+    // intake.photoeyeObserver = autoFeed;
 
 
     feedworksSequencer = new WaitUntilCommand(intake::photoeyeBlocked)

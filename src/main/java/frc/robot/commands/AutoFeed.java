@@ -6,7 +6,7 @@ import frc.robot.stuff.InfeedPhotoeyeObserver;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class AutoFeed implements InfeedPhotoeyeObserver {
+public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver {
 
   final IntakeSubsystem infeedSubsystem;
   final FeederSubsystem feedworks;
@@ -30,6 +30,15 @@ public class AutoFeed implements InfeedPhotoeyeObserver {
     return infeedAndFeedworks;
   }
 
+  Command createAutoFeedCommandSequence2() {
+    var slowInfeed = new RunInfeedPercentOutput(infeedSubsystem, 0.4).withTimeout(0.8);
+    var feeder1 = RunFeedworksPercentOutput.runFirstFeeder(feedworks, 0.5).withTimeout(0.8);
+    var feeder2 = RunFeedworksPercentOutput.runSecondFeeder(feedworks, 0.6).withTimeout(0.4);
+    Command cmd = slowInfeed.alongWith(feeder1).alongWith(feeder2);
+    if (prevInfeedCommand != null) cmd = cmd.andThen(new ScheduleCommand(prevInfeedCommand));
+    return cmd;
+  }
+
   @Override
   public void onPhotoeyeBlocked() {
     prevInfeedCommand = infeedSubsystem.getCurrentCommand();
@@ -44,6 +53,19 @@ public class AutoFeed implements InfeedPhotoeyeObserver {
     double elapsed = CommandScheduler.getInstance().timeSinceScheduled(autoFeedCommand);
     if (elapsed != -1.0)
       DriverStation.reportWarning("photoeye unblocked " + elapsed + "s after autofeed start", false);
+  }
+
+  boolean photoeyeBlocked = false;
+
+  @Override
+  public void execute() {
+    var prev = photoeyeBlocked;
+    var cur = photoeyeBlocked = infeedSubsystem.photoeyeBlocked();
+    if (!prev && cur) {
+      onPhotoeyeBlocked();
+    } else if (prev && !cur) {
+      onPhotoeyeUnblocked();
+    }
   }
 }
 
