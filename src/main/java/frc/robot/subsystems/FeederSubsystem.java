@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
@@ -19,6 +20,14 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
   private final JamDetector jam1;
   private final JamDetector jam2;
+
+  public WPI_TalonSRX getController1() {
+    return controller1;
+  }
+
+  public WPI_TalonSRX getController2() {
+    return controller2;
+  }
 
   static class JamDetector {
     private double statorCurrent;
@@ -84,8 +93,9 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
   }
 
-  public final WPI_TalonSRX controller1 = new WPI_TalonSRX(1);
-  public final WPI_TalonSRX controller2 = new WPI_TalonSRX(4);
+  private final WPI_TalonSRX controller1 = new WPI_TalonSRX(1);
+  private final WPI_TalonSRX controller2 = new WPI_TalonSRX(4);
+
 
   public FeederSubsystem() {
     addChild("feeder1", controller1);
@@ -123,11 +133,13 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
     jam1.onJam = () -> {
       DriverStation.reportWarning("jam 1", false);
-      getCurrentCommand().cancel();
+      var currentCommand = getCurrentCommand();
+      if (currentCommand != null) currentCommand.cancel();
     };
     jam2.onJam = () -> {
       DriverStation.reportWarning("jam 2", false);
-      getCurrentCommand().cancel();
+      var currentCommand = getCurrentCommand();
+      if (currentCommand != null) currentCommand.cancel();
     };
 
     setupShuffleboard();
@@ -135,35 +147,35 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
   private void setupShuffleboard() {
     var tab = Shuffleboard.getTab(FeederSubsystem.class.getSimpleName());
-    tab.add(controller1);
-    tab.add(controller2);
+    tab.add(getController1());
+    tab.add(getController2());
     tab.addNumber("feeder1_pos", this::getFirstEncoderPosition);
     tab.addNumber("feeder2_pos", this::getSecondEncoderPosition);
     tab.addNumber("feeder1_vel", this::getFirstEncoderVelocity);
     tab.addNumber("feeder2_vel", this::getSecondEncoderVelocity);
-    tab.addNumber("feeder1_current", controller1::getStatorCurrent);
-    tab.addNumber("feeder2_current", controller2::getStatorCurrent);
+    tab.addNumber("feeder1_current", getController1()::getStatorCurrent);
+    tab.addNumber("feeder2_current", getController2()::getStatorCurrent);
     tab.add(new ResetSensors<>(this));
 
   }
 
   public double getFirstEncoderPosition() {
-    return controller1.getSelectedSensorPosition();
+    return getController1().getSelectedSensorPosition();
   }
 
   public double getSecondEncoderPosition() {
-    return controller2.getSelectedSensorPosition();
+    return getController2().getSelectedSensorPosition();
   }
 
   /**
    * @return sensor velocity (in raw sensor units) per 100ms.
    */
   public double getFirstEncoderVelocity() {
-    return controller1.getSelectedSensorVelocity(TalonConstants.PRIMARY_PID);
+    return getController1().getSelectedSensorVelocity(TalonConstants.PRIMARY_PID);
   }
 
   public double getSecondEncoderVelocity() {
-    return controller2.getSelectedSensorVelocity(TalonConstants.PRIMARY_PID);
+    return getController2().getSelectedSensorVelocity(TalonConstants.PRIMARY_PID);
   }
 
   @Override
@@ -177,17 +189,17 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
   }
 
   public void setMotorOutputs(double first, double second) {
-    controller1.set(first);
-    controller2.set(second);
+    getController1().set(first);
+    getController2().set(second);
   }
 
   public boolean isEnabled() {
-    return controller1.getMotorOutputVoltage() > 0.0 && controller2.getMotorOutputVoltage() > 0.0;
+    return getController1().getMotorOutputVoltage() > 0.0 && getController2().getMotorOutputVoltage() > 0.0;
   }
 
   @Override
   public void resetSensors() {
-    for (var c : List.of(controller1, controller2)) {
+    for (var c : List.of(getController1(), getController2())) {
       ErrorCode errorCode = c.getSensorCollection().setQuadraturePosition(0, TalonConstants.DEFAULT_TIMEOUT);
       if (errorCode != ErrorCode.OK) {
         DriverStation.reportError("Problem reseting " + c.getName() + " in subsystem " + getSubsystem(), false);
