@@ -1,24 +1,88 @@
 package frc.robot.subsystems;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 import frc.robot.stuff.TalonFaultsReporter;
 
-import static frc.robot.Constants.*;
+import java.util.List;
+
+import static frc.robot.Constants.TalonConstants;
 
 public class FeederSubsystem extends SubsystemBase implements SensorReset {
+
+  private final JamDetector jam1;
+  private final JamDetector jam2;
+
+  static class JamDetector {
+    private double statorCurrent;
+    private double outputPercent;
+    private int velocity;
+    Runnable onJam;
+
+    JamDetector(TalonSRX talon) {
+      this.talon = talon;
+    }
+
+    enum JamStatus {
+      NOT_JAMMED {
+        @Override
+        void handle(JamDetector detector) {
+          if (detector.isJam()) {
+            detector.maybejam_start = System.currentTimeMillis();
+            detector.transition(MAYBE_JAMMED);
+          }
+        }
+      },
+      MAYBE_JAMMED {
+        @Override
+        void handle(JamDetector detector) {
+          if (!detector.isJam()) {
+            detector.transition(NOT_JAMMED);
+          } else if ((System.currentTimeMillis() - detector.maybejam_start) - 250 > 0) {
+            detector.transition(JAMMED);
+          }
+        }
+      },
+      JAMMED {
+        @Override
+        void handle(JamDetector detector) {
+          if (!detector.isJam()) detector.transition(NOT_JAMMED);
+          else if (detector.onJam != null) detector.onJam.run();
+        }
+      };
+
+      abstract void handle(JamDetector detector);
+    }
+
+    void transition(JamStatus status) {
+      this.status = status;
+    }
+
+    JamStatus status = JamStatus.NOT_JAMMED;
+    final TalonSRX talon;
+
+    long maybejam_start = -1;
+
+    boolean isJam() {
+      return statorCurrent > 3.0 && (outputPercent * 120) * 0.7 < velocity;
+    }
+
+    void run() {
+      statorCurrent = talon.getStatorCurrent();
+      outputPercent = talon.getMotorOutputPercent();
+      velocity = talon.getSelectedSensorVelocity();
+      status.handle(this);
+    }
+
+
+  }
 
   public final WPI_TalonSRX controller1 = new WPI_TalonSRX(1);
   public final WPI_TalonSRX controller2 = new WPI_TalonSRX(4);
@@ -53,6 +117,19 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
     controller2.setInverted(true);
     // controller2.setInverted(InvertType.FollowMaster);
+
+    jam1 = new JamDetector(controller1);
+    jam2 = new JamDetector(controller2);
+
+    jam1.onJam = () -> {
+      DriverStation.reportWarning("jam 1", false);
+      getCurrentCommand().cancel();
+    };
+    jam2.onJam = () -> {
+      DriverStation.reportWarning("jam 2", false);
+      getCurrentCommand().cancel();
+    };
+
     setupShuffleboard();
   }
 
@@ -91,15 +168,8 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
 
   @Override
   public void periodic() {
-    // SmartDashboard.putNumber("colon1_position", getFirstEncoderPosition());
-    // SmartDashboard.putNumber("colon2_position", getSecondEncoderPosition());
-    // SmartDashboard.putNumberArray("colon_positions",
-    //                               new double[]{getFirstEncoderPosition(), getSecondEncoderPosition()});
-    // SmartDashboard.putNumber("colon1_velocity", getFirstEncoderVelocity());
-    // SmartDashboard.putNumber("colon2_velocity", getSecondEncoderVelocity());
-    // SmartDashboard.putNumberArray("colon_velocities(sp?)",
-    //                               new double[]{getFirstEncoderVelocity(), getSecondEncoderVelocity()});
-
+    jam1.run();
+    jam2.run();
   }
 
   public void setMotorOutputs(double first) {
