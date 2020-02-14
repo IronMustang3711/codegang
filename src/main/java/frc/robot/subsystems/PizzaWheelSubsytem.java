@@ -24,6 +24,8 @@ public class PizzaWheelSubsytem extends SubsystemBase implements SensorReset {
     setName("PizzaWheel");
     addChild("turner", turner);
     addChild("angler", angler);
+    turner.setSafetyEnabled(false);
+    angler.setSafetyEnabled(false);
 
     turner.setInverted(false);
     turner.setSensorPhase(true);

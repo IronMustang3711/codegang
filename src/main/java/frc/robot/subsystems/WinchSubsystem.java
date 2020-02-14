@@ -1,14 +1,17 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class WinchSubsystem extends SubsystemBase {
-    WPI_TalonSRX winch = new WPI_TalonSRX(02);
+    WPI_TalonSRX winch = new WPI_TalonSRX(2);
 
     public WinchSubsystem() {
         addChild("controller", winch);
+        winch.setNeutralMode(NeutralMode.Brake);
+        winch.setSafetyEnabled(false);
     }
 
     public void winchForward() {
