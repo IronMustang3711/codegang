@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -26,7 +27,7 @@ public class ShooterVelocityControl extends CommandBase {
     error1 = errors.add("error1", 0.0).getEntry();
     error2 = errors.add("error2", 0.0).getEntry();
 
-    var outs = tab.getLayout("output%");
+    var outs = tab.getLayout("output%", BuiltInLayouts.kList);
     output1 = outs.add("output1", 0.0).getEntry();
     output2 = outs.add("output2", 0.0).getEntry();
 
@@ -39,15 +40,22 @@ public class ShooterVelocityControl extends CommandBase {
   public void initialize() {
     shooter.controller1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     shooter.controller1.configVoltageCompSaturation(10.0);
-    shooter.controller1.config_kF(0, 0.04);
-    shooter.controller1.config_kP(0, 0.01);
-    shooter.controller1.configAllowableClosedloopError(0, 100);
+    shooter.controller1.config_kF(0, 0.049);
+    shooter.controller1.config_kP(0, 0.015);
+    //shooter.controller1.config_kD(0,0.02);
+    shooter.controller1.configAllowableClosedloopError(0, 0);
+    shooter.controller1.setNeutralMode(NeutralMode.Coast);
+    shooter.controller1.configPeakOutputReverse(0.0);
+    shooter.controller1.enableVoltageCompensation(true);
 
     shooter.controller2.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     shooter.controller2.configVoltageCompSaturation(10.0);
-    shooter.controller2.config_kF(0, 0.04);
-    shooter.controller2.config_kP(0, 0.01);
-    shooter.controller2.configAllowableClosedloopError(0, 100);
+    shooter.controller2.config_kF(0, 0.049);
+    shooter.controller2.config_kP(0, 0.1);
+    shooter.controller1.configAllowableClosedloopError(0, 0);
+    shooter.controller1.setNeutralMode(NeutralMode.Coast);
+    shooter.controller1.configPeakOutputReverse(0.0);
+    shooter.controller1.enableVoltageCompensation(true);
   }
 
   @Override
@@ -68,6 +76,8 @@ public class ShooterVelocityControl extends CommandBase {
   public void end(boolean interrupted) {
     shooter.controller1.configVoltageCompSaturation(12.0);
     shooter.controller2.configVoltageCompSaturation(12.0);
+    shooter.controller1.set(ControlMode.Disabled, 0.0);
+    shooter.controller2.set(ControlMode.Disabled, 0.0);
 
   }
 }
