@@ -4,87 +4,29 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants.TalonConstants;
+import frc.robot.commands.HookPosition;
+import frc.robot.commands.HookPositionWithMagic;
 import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 
 public class HookSubsystem extends PIDSubsystem implements SensorReset {
-  private WPI_TalonSRX hookController;
-
   //todo: change in config
   static final double kP = 1.0;
   static final double kI = 0.0;
   static final double kD = 0.0;
-
   static final int POSITION_SLOT = 0;
   static final int MM_SLOT = 1;
-
-  enum TalonControl {
-
-    POSITION {
-      @Override
-      void init(HookSubsystem hook) {
-        hook.hookController.selectProfileSlot(POSITION_SLOT, TalonConstants.PRIMARY_PID);
-      }
-
-      @Override
-      void apply(HookSubsystem hook, double command) {
-        hook.hookController.set(ControlMode.Position, command);
-      }
-    },
-    MM_POSITION {
-      @Override
-      void init(HookSubsystem hook) {
-        hook.hookController.selectProfileSlot(MM_SLOT, TalonConstants.PRIMARY_PID);
-      }
-
-      @Override
-      void apply(HookSubsystem hook, double command) {
-        hook.hookController.set(ControlMode.MotionMagic, command);
-      }
-    },
-    PCT_OUT {
-      @Override
-      void init(HookSubsystem hook) {
-      }
-
-      @Override
-      void apply(HookSubsystem hook, double command) {
-        hook.hookController.set(ControlMode.PercentOutput, command);
-      }
-    },
-    DISABLE {
-      @Override
-      void init(HookSubsystem hook) {
-
-      }
-
-      @Override
-      void apply(HookSubsystem hook, double command) {
-        hook.hookController.set(ControlMode.Disabled, 0.0);
-      }
-    };
-
-    abstract void init(HookSubsystem hook);
-
-    abstract void apply(HookSubsystem hook, double command);
-  }
-
   TalonControl ctrl = TalonControl.PCT_OUT;
-
-  void control(TalonControl c, double demand) {
-    if (c != ctrl) {
-      ctrl = c;
-      c.init(this);
-    } else {
-      c.apply(this, demand);
-    }
-  }
-
+  HookShuffleboard hookShuffleboard;
+  private WPI_TalonSRX hookController;
 
   public HookSubsystem() {
     super(new PIDController(kP, kI, kD));
@@ -112,8 +54,7 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
 
     resetSensors();
 
-    setupShuffleboard();
-
+    hookShuffleboard = new HookShuffleboard();
   }
 
   static TalonSRXConfiguration applyConfig(TalonSRXConfiguration config) {
@@ -175,15 +116,13 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
     return config;
   }
 
-  private void setupShuffleboard() {
-    var tab = Shuffleboard.getTab(HookSubsystem.class.getSimpleName());
-    tab.add(getController());
-    tab.add(hookController);
-    tab.addNumber("hookPosition", this::getEncoderPosition);
-    tab.addNumber("hookVelocity", this::getEncoderVelocity);
-    tab.addNumber("hookCurrent", hookController::getStatorCurrent);
-    tab.add(new ResetSensors<>(this));
-
+  void control(TalonControl c, double demand) {
+    if (c != ctrl) {
+      ctrl = c;
+      c.init(this);
+    } else {
+      c.apply(this, demand);
+    }
   }
 
   public double getEncoderPosition() {
@@ -197,13 +136,13 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
   @Override
   public void periodic() {
     super.periodic();
+    hookShuffleboard.updateShuffleboard();
   }
 
   @Override
   protected void useOutput(double output, double setpoint) {
     hookController.set(output);
   }
-
 
   public void setOutput(double amount) {
     control(TalonControl.PCT_OUT, amount);
@@ -229,6 +168,113 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
     if (errorCode != ErrorCode.OK) {
       DriverStation.reportError("Problem reseting " + hookController.getName() + " in subsystem " + getSubsystem(),
                                 false);
+    }
+  }
+
+  enum TalonControl {
+
+    POSITION {
+      @Override
+      void init(HookSubsystem hook) {
+        hook.hookController.selectProfileSlot(POSITION_SLOT, TalonConstants.PRIMARY_PID);
+      }
+
+      @Override
+      void apply(HookSubsystem hook, double command) {
+        hook.hookController.set(ControlMode.Position, command);
+      }
+    },
+    MM_POSITION {
+      @Override
+      void init(HookSubsystem hook) {
+        hook.hookController.selectProfileSlot(MM_SLOT, TalonConstants.PRIMARY_PID);
+      }
+
+      @Override
+      void apply(HookSubsystem hook, double command) {
+        hook.hookController.set(ControlMode.MotionMagic, command);
+      }
+    },
+    PCT_OUT {
+      @Override
+      void init(HookSubsystem hook) {
+      }
+
+      @Override
+      void apply(HookSubsystem hook, double command) {
+        hook.hookController.set(ControlMode.PercentOutput, command);
+      }
+    },
+    DISABLE {
+      @Override
+      void init(HookSubsystem hook) {
+
+      }
+
+      @Override
+      void apply(HookSubsystem hook, double command) {
+        hook.hookController.set(ControlMode.Disabled, 0.0);
+      }
+    };
+
+    abstract void init(HookSubsystem hook);
+
+    abstract void apply(HookSubsystem hook, double command);
+  }
+
+  class HookShuffleboard {
+    NetworkTableEntry ntPos;
+    NetworkTableEntry ntVel;
+    NetworkTableEntry ntCurr;
+    NetworkTableEntry ntOut;
+
+    NetworkTableEntry ntErr;
+    NetworkTableEntry ntSp;
+
+    NetworkTableEntry setpoint;
+    HookPosition hookPosition;
+    HookPositionWithMagic hookPositionWithMagic;
+
+    HookShuffleboard() {
+      var tab = Shuffleboard.getTab(HookSubsystem.class.getSimpleName());
+      tab.add(getController());
+      tab.add(hookController);
+
+      ShuffleboardLayout stuff = tab.getLayout("stuff", BuiltInLayouts.kList);
+      ntPos = stuff.add("position", 0.0).getEntry();
+      ntVel = stuff.add("velocity", 0.0).getEntry();
+      ntOut = stuff.add("output%", 0.0).getEntry();
+      ntCurr = stuff.add("current", 0.0).getEntry();
+
+      var closedLoopStuff = tab.getLayout("closed loop", BuiltInLayouts.kList);
+      ntErr = closedLoopStuff.add("error", 0.0).getEntry();
+      ntSp = closedLoopStuff.add("setpoint", 0.0).getEntry();
+
+      setpoint = tab.add("setpoint", 0.0).getEntry();
+
+      tab.add(new ResetSensors<>(HookSubsystem.this));
+
+      ShuffleboardLayout posctrl = tab.getLayout("position control", BuiltInLayouts.kList);
+      posctrl.add(hookPosition = new HookPosition(HookSubsystem.this, setpoint.getDouble(getEncoderPosition())));
+      posctrl.add(hookPositionWithMagic = new HookPositionWithMagic(HookSubsystem.this,
+                                                                    setpoint.getDouble(getEncoderPosition())));
+
+
+    }
+
+    void updateShuffleboard() {
+      ntPos.setDouble(getEncoderPosition());
+      ntVel.setDouble(getEncoderVelocity());
+      ntOut.setDouble(hookController.getMotorOutputPercent());
+      ntCurr.setDouble(hookController.getStatorCurrent());
+
+      if (TalonControl.POSITION.equals(ctrl) || TalonControl.MM_POSITION.equals(ctrl)) {
+        ntErr.setDouble(hookController.getClosedLoopError());
+        ntSp.setDouble(hookController.getClosedLoopTarget());
+      }
+      var sp = setpoint.getDouble(getEncoderPosition());
+      hookPosition.setpoint = sp;
+      hookPositionWithMagic.setpoint = sp;
     }
   }
 }

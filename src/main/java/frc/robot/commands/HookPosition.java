@@ -5,9 +5,9 @@ import frc.robot.subsystems.HookSubsystem;
 
 public class HookPosition extends CommandBase {
   final HookSubsystem hook;
-  int setpoint;
+  public double setpoint;
 
-  public HookPosition(HookSubsystem hook, int setpoint) {
+  public HookPosition(HookSubsystem hook, double setpoint) {
     this.hook = hook;
     this.setpoint = setpoint;
     addRequirements(hook);
