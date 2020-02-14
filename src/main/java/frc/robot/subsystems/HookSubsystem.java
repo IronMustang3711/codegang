@@ -18,6 +18,8 @@ import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 
 public class HookSubsystem extends PIDSubsystem implements SensorReset {
+  static final boolean ENABLE_SHUFFLEBOARD = true;
+
   //todo: change in config
   static final double kP = 1.0;
   static final double kI = 0.0;
@@ -25,7 +27,6 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
   static final int POSITION_SLOT = 0;
   static final int MM_SLOT = 1;
   TalonControl ctrl = TalonControl.PCT_OUT;
-  HookShuffleboard hookShuffleboard;
   private WPI_TalonSRX hookController;
 
   public HookSubsystem() {
@@ -54,7 +55,6 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
 
     resetSensors();
 
-    hookShuffleboard = new HookShuffleboard();
   }
 
   static TalonSRXConfiguration applyConfig(TalonSRXConfiguration config) {
@@ -136,7 +136,7 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
   @Override
   public void periodic() {
     super.periodic();
-    hookShuffleboard.updateShuffleboard();
+    shuffleboardUpdate.run();
   }
 
   @Override
@@ -222,7 +222,8 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
     abstract void apply(HookSubsystem hook, double command);
   }
 
-  class HookShuffleboard {
+  Runnable shuffleboardUpdate = ENABLE_SHUFFLEBOARD ? new Runnable() {
+
     NetworkTableEntry ntPos;
     NetworkTableEntry ntVel;
     NetworkTableEntry ntCurr;
@@ -235,7 +236,7 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
     HookPosition hookPosition;
     HookPositionWithMagic hookPositionWithMagic;
 
-    HookShuffleboard() {
+    {
       var tab = Shuffleboard.getTab(HookSubsystem.class.getSimpleName());
       tab.add(getController());
       tab.add(hookController);
@@ -259,10 +260,9 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
       posctrl.add(hookPositionWithMagic = new HookPositionWithMagic(HookSubsystem.this,
                                                                     setpoint.getDouble(getEncoderPosition())));
 
-
     }
 
-    void updateShuffleboard() {
+    public void run() {
       ntPos.setDouble(getEncoderPosition());
       ntVel.setDouble(getEncoderVelocity());
       ntOut.setDouble(hookController.getMotorOutputPercent());
@@ -277,4 +277,5 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
       hookPositionWithMagic.setpoint = sp;
     }
   }
+                                  : () -> {};
 }
