@@ -67,6 +67,11 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver {
       onPhotoeyeUnblocked();
     }
   }
+
+  @Override
+  public boolean runsWhenDisabled() {
+    return true; //todo: necessary?
+  }
 }
 
 
