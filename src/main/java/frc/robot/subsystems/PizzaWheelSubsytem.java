@@ -14,13 +14,17 @@ import frc.robot.Constants;
 import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
 
+import java.util.function.DoubleSupplier;
+
 public class PizzaWheelSubsytem extends SubsystemBase implements SensorReset {
 
   WPI_TalonSRX turner = new WPI_TalonSRX(6);
   Talon angler = new Talon(0);
   ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+  private DoubleSupplier anglerCurrent;
 
-  public PizzaWheelSubsytem() {
+  public PizzaWheelSubsytem(DoubleSupplier anglerCurrent) {
+    this.anglerCurrent = anglerCurrent;
     setName("PizzaWheel");
     addChild("turner", turner);
     addChild("angler", angler);
@@ -44,6 +48,7 @@ public class PizzaWheelSubsytem extends SubsystemBase implements SensorReset {
     tab.addNumber("pizza encoder", () -> (double) turner.getSelectedSensorPosition());
     tab.addDoubleArray("RGB", () -> new double[]{colorSensor.getRed(), colorSensor.getGreen(), colorSensor.getBlue()});
     tab.addNumber("proximity", () -> colorSensor.getProximity());
+    tab.addNumber("angler current", anglerCurrent);
     tab.add(new ResetSensors<>(this));
 
   }
