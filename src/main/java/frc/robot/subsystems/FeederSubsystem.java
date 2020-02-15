@@ -4,9 +4,12 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.SensorReset;
@@ -17,9 +20,8 @@ import java.util.List;
 import static frc.robot.Constants.TalonConstants;
 
 public class FeederSubsystem extends SubsystemBase implements SensorReset {
+  static final boolean ENABLE_SHUFFLEBOARD = true;
 
-  private final JamDetector jam1;
-  private final JamDetector jam2;
 
   public WPI_TalonSRX getController1() {
     return controller1;
@@ -96,6 +98,8 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
   private final WPI_TalonSRX controller1 = new WPI_TalonSRX(1);
   private final WPI_TalonSRX controller2 = new WPI_TalonSRX(4);
 
+  private final JamDetector jam1 = new JamDetector(controller1);
+  private final JamDetector jam2 = new JamDetector(controller2);
 
   public FeederSubsystem() {
     addChild("feeder1", controller1);
@@ -128,8 +132,6 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
     controller2.setInverted(true);
     // controller2.setInverted(InvertType.FollowMaster);
 
-    jam1 = new JamDetector(controller1);
-    jam2 = new JamDetector(controller2);
 
     jam1.onJam = () -> {
       DriverStation.reportWarning("jam 1", false);
@@ -142,22 +144,42 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
       if (currentCommand != null) currentCommand.cancel();
     };
 
-    setupShuffleboard();
   }
 
-  private void setupShuffleboard() {
-    var tab = Shuffleboard.getTab(FeederSubsystem.class.getSimpleName());
-    tab.add(getController1());
-    tab.add(getController2());
-    tab.addNumber("feeder1_pos", this::getFirstEncoderPosition);
-    tab.addNumber("feeder2_pos", this::getSecondEncoderPosition);
-    tab.addNumber("feeder1_vel", this::getFirstEncoderVelocity);
-    tab.addNumber("feeder2_vel", this::getSecondEncoderVelocity);
-    tab.addNumber("feeder1_current", getController1()::getStatorCurrent);
-    tab.addNumber("feeder2_current", getController2()::getStatorCurrent);
-    tab.add(new ResetSensors<>(this));
+  Runnable shuffleboardUpdate = ENABLE_SHUFFLEBOARD ? new Runnable() {
+    class FeederStuff {
+      FeederStuff(ShuffleboardLayout container) {
+        position = container.add("position", 0.0).getEntry();
+        velocity = container.add("velocity", 0.0).getEntry();
+        current = container.add("current", 0.0).getEntry();
+      }
 
-  }
+      NetworkTableEntry position;
+      NetworkTableEntry velocity;
+      NetworkTableEntry current;
+    }
+
+    ShuffleboardTab tab = Shuffleboard.getTab(FeederSubsystem.class.getSimpleName());
+    FeederStuff feeder1Stuff = new FeederStuff(tab.getLayout("feeder1", BuiltInLayouts.kList));
+    FeederStuff feeder2Stuff = new FeederStuff(tab.getLayout("feeder2", BuiltInLayouts.kList));
+
+    {
+      tab.add(new ResetSensors<>(FeederSubsystem.this));
+    }
+
+    @Override
+    public void run() {
+      feeder1Stuff.position.setDouble(getFirstEncoderPosition());
+      feeder1Stuff.velocity.setDouble(getFirstEncoderVelocity());
+      feeder1Stuff.current.setDouble(controller1.getStatorCurrent());
+
+      feeder2Stuff.position.setDouble(getSecondEncoderPosition());
+      feeder2Stuff.velocity.setDouble(getSecondEncoderVelocity());
+      feeder2Stuff.current.setDouble(controller2.getStatorCurrent());
+
+    }
+  } : () -> {};
+
 
   public double getFirstEncoderPosition() {
     return getController1().getSelectedSensorPosition();
@@ -182,6 +204,7 @@ public class FeederSubsystem extends SubsystemBase implements SensorReset {
   public void periodic() {
     jam1.run();
     jam2.run();
+    shuffleboardUpdate.run();
   }
 
   public void setMotorOutputs(double first) {

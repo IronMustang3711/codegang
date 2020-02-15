@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,12 +9,9 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.*;
+import frc.robot.stuff.Danger;
 import frc.robot.subsystems.*;
 
-import java.io.CharArrayWriter;
-import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
 import java.util.List;
 
 public class RobotContainer {
@@ -60,13 +56,13 @@ public class RobotContainer {
     SmartDashboard.putData("feedworks thing", feedworksSequencer);
     SmartDashboard.putData(pdp);
     SmartDashboard.putData(CommandScheduler.getInstance());
+    Danger.install();
 
 //    CommandScheduler.getInstance().onCommandInitialize(c->DriverStation.reportWarning("cmd init: "+c, false));
 //    CommandScheduler.getInstance().onCommandExecute(c->DriverStation.reportWarning("cmd exec: "+c, false));
 
 
     //setupCamera();
-    stopComplainingAboutJoysticsBeingUnplugged();
   }
 
   UsbCamera cam;
@@ -133,19 +129,5 @@ public class RobotContainer {
     var cmd = new StartEndCommand(init, end, chassis);
     cmd.schedule();
 
-  }
-
-  static void stopComplainingAboutJoysticsBeingUnplugged() {
-    try {
-      Field nextMessageTime = DriverStation.class.getDeclaredField("m_nextMessageTime");
-      nextMessageTime.setAccessible(true);
-      nextMessageTime.setDouble(DriverStation.getInstance(), Double.MAX_VALUE);
-    } catch (NoSuchFieldException | IllegalAccessException | InaccessibleObjectException e) {
-      e.fillInStackTrace();
-      var ccw = new CharArrayWriter(120);
-      e.printStackTrace(new PrintWriter(ccw));
-      DriverStation.reportError(new String(ccw.toCharArray()), e.getStackTrace());
-
-    }
   }
 }
