@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -82,7 +83,8 @@ public class RobotContainer {
     new JoystickButton(joy, 2).whileHeld(new RunFeedworksPercentOutput(feedworks, 1.0));
 
     var shootSequence = new ParallelCommandGroup(
-      new RunShooterPercentOutput(shooter, this::shooterOutput),
+      // new RunShooterPercentOutput(shooter, this::shooterOutput),
+      new ShooterVelocityControl(shooter),
       new SequentialCommandGroup(
         new ParallelCommandGroup(
           new InstantCommand(() -> {
@@ -100,6 +102,15 @@ public class RobotContainer {
     new JoystickButton(joy, 6).whileHeld(new RunHookPercentOutput(hook, 0.25));
     new JoystickButton(joy, 7).whileHeld(winch::winchForward).whenReleased(winch::winchDisable);
     new JoystickButton(joy, 8).whileHeld(winch::winchReverse).whenReleased(winch::winchDisable);
+    new POVButton(joy, 0).whenPressed(
+      new StartEndCommand(() -> pizzaWheel.anglerUp(), pizzaWheel::anglerNeutral, pizzaWheel)
+      .withTimeout(1.0)
+      .withInterrupt(() -> pizzaWheel.isAnglerBlocked()));
+    new POVButton(joy, 180).whenPressed(
+      new StartEndCommand(() -> pizzaWheel.anglerDown(), pizzaWheel::anglerNeutral, pizzaWheel)
+    .withTimeout(1.0)
+    .withInterrupt(() -> pizzaWheel.isAnglerBlocked()));
+    new JoystickButton(joy, 5).whileHeld(new StartEndCommand(pizzaWheel::runSpinner, pizzaWheel::stopSpinner, pizzaWheel));
 
     new JoystickButton(joy, 9).whileHeld(new RunInfeedPercentOutput(intake, -1.0)
                                            .alongWith(new RunFeedworksPercentOutput(feedworks, -1.0)));

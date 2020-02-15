@@ -31,7 +31,7 @@ public class ShooterVelocityControl extends CommandBase {
     output1 = outs.add("output1", 0.0).getEntry();
     output2 = outs.add("output2", 0.0).getEntry();
 
-    setpoint = tab.add("setpoint", 0.0).getEntry();
+    setpoint = tab.add("setpoint", 18000.0).getEntry();
 
 
   }
@@ -60,7 +60,7 @@ public class ShooterVelocityControl extends CommandBase {
 
   @Override
   public void execute() {
-    double sp = setpoint.getDouble(0.0);
+    double sp = setpoint.getDouble(18000.0);
 
     shooter.controller1.set(ControlMode.Velocity, sp);
     shooter.controller2.set(ControlMode.Velocity, sp);

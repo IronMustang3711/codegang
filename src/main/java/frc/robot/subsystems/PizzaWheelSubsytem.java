@@ -40,6 +40,30 @@ public class PizzaWheelSubsytem extends SubsystemBase implements SensorReset {
 
   }
 
+  public boolean isAnglerBlocked() {
+    return anglerCurrent.getAsDouble() > 3.0;
+  }
+
+  public void anglerUp() {
+    angler.set(0.5);
+  }
+
+  public void anglerDown() {
+    angler.set(-0.5);
+  }
+
+  public void anglerNeutral() {
+    angler.set(0.0);
+  }
+
+  public void runSpinner() {
+    turner.set(1.0);
+  }
+
+  public void stopSpinner() {
+    turner.set(0.0);
+  }
+
   void setupShuffleboardTab() {
     ShuffleboardTab tab = Shuffleboard.getTab(PizzaWheelSubsytem.class.getSimpleName());
     tab.add(turner);
