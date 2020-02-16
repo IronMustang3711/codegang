@@ -27,11 +27,10 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
   static final int POSITION_SLOT = 0;
   static final int MM_SLOT = 1;
   TalonControl ctrl = TalonControl.PCT_OUT;
-  private WPI_TalonSRX hookController;
+  private WPI_TalonSRX hookController = new WPI_TalonSRX(12); ;
 
   public HookSubsystem() {
     super(new PIDController(kP, kI, kD));
-    hookController = new WPI_TalonSRX(12);
     hookController.setSafetyEnabled(false);
     addChild("pid", getController());
     addChild("controller", hookController);
@@ -94,8 +93,8 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
     config.nominalOutputForward = 0;
     config.nominalOutputReverse = 0;
 
-    config.peakOutputForward = 0.5;
-    config.peakOutputReverse = 0.3;
+    //config.peakOutputForward = 0.5;
+    //config.peakOutputReverse = 0.3;
 
     config.voltageCompSaturation = 10.0;
 
@@ -238,8 +237,8 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
 
     {
       var tab = Shuffleboard.getTab(HookSubsystem.class.getSimpleName());
-      tab.add(getController());
-      tab.add(hookController);
+      // tab.add(getController());
+      // tab.add(hookController);
 
       ShuffleboardLayout stuff = tab.getLayout("stuff", BuiltInLayouts.kList);
       ntPos = stuff.add("position", 0.0).getEntry();

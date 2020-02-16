@@ -94,8 +94,8 @@ public class RobotContainer {
     shootSequence.setName("shoot_sequence");
 
     new JoystickButton(joy, 1).whileHeld(shootSequence);
-    new JoystickButton(joy, 4).whileHeld(new RunHookPercentOutput(hook, -0.25));
-    new JoystickButton(joy, 6).whileHeld(new RunHookPercentOutput(hook, 0.25));
+    new JoystickButton(joy, 4).whileHeld(new RunHookPercentOutput(hook, -0.5));
+    new JoystickButton(joy, 6).whileHeld(new RunHookPercentOutput(hook, 0.5));
     new JoystickButton(joy, 7).whileHeld(winch::winchForward).whenReleased(winch::winchDisable);
     new JoystickButton(joy, 8).whileHeld(winch::winchReverse).whenReleased(winch::winchDisable);
     new POVButton(joy, 0).whenPressed(
@@ -119,7 +119,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return driveWithJoystick;
+    return new RunChassis(chassis).withTimeout(2.0);
   }
 
   public void testInit() {

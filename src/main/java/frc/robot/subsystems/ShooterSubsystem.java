@@ -27,6 +27,8 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
   NetworkTableEntry[] vels;
   NetworkTableEntry[] outs;
   NetworkTableEntry enableTelem;
+  public NetworkTableEntry setpoint;
+
 
   double getOutput() {
     return out;
@@ -70,6 +72,7 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     positions = new NetworkTableEntry[2];
 
     var tab = Shuffleboard.getTab(ShooterSubsystem.class.getSimpleName());
+    setpoint = tab.add("setpoint",18000).getEntry();
     enableTelem = tab.add("enable telem", true)
                      .withWidget(BuiltInWidgets.kToggleButton)
                      .getEntry();
