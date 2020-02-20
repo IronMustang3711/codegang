@@ -38,10 +38,11 @@ public class ShooterVelocityControl extends CommandBase {
 
   @Override
   public void execute() {
-    double sp = shooter.setpoint.getDouble(18000.0);
+    double sp1 = shooter.lowerSetpoint.getDouble(20000.0);
+    double sp2 = shooter.upperSetpoint.getDouble(16000.0);
 
-    shooter.upperController.set(ControlMode.Velocity, sp);
-    shooter.lowerController.set(ControlMode.Velocity, sp);
+    shooter.upperController.set(ControlMode.Velocity, sp1);
+    shooter.lowerController.set(ControlMode.Velocity, sp2);
 
 
 

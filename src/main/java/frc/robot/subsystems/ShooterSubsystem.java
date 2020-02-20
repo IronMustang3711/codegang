@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -19,15 +20,16 @@ import frc.robot.stuff.TalonFaultsReporter;
 import java.util.List;
 
 public class ShooterSubsystem extends SubsystemBase implements SensorReset {
-  public final WPI_TalonSRX controller1 = new WPI_TalonSRX(5); // upper
-  public WPI_TalonSRX controller2 = new WPI_TalonSRX(27); //lower
+  public final WPI_TalonSRX lowerController = new WPI_TalonSRX(5); // upper
+  public WPI_TalonSRX upperController = new WPI_TalonSRX(27); //lower
   double out = 0.0;
 
   NetworkTableEntry[] positions;
   NetworkTableEntry[] vels;
   NetworkTableEntry[] outs;
   NetworkTableEntry enableTelem;
-  public NetworkTableEntry setpoint;
+  public NetworkTableEntry lowerSetpoint;
+  public NetworkTableEntry upperSetpoint;
 
 
   double getOutput() {
@@ -35,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
   }
 
   public ShooterSubsystem() {
-    for (var talon : List.of(controller1, controller2)) {
+    for (var talon : List.of(lowerController, upperController)) {
       talon.setSafetyEnabled(false);
       talon.setExpiration(0.5);
       talon.configFactoryDefault();
@@ -53,15 +55,15 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
       TalonFaultsReporter.instrument(talon);
     }
 
-    controller2.follow(controller1);
-    controller2.setInverted(InvertType.FollowMaster);
-    controller1.setInverted(true);
-    controller2.setInverted(true);
-    controller1.setSensorPhase(true);
-    controller2.setSensorPhase(true);
+    upperController.follow(lowerController);
+    upperController.setInverted(InvertType.FollowMaster);
+    lowerController.setInverted(true);
+    upperController.setInverted(true);
+    lowerController.setSensorPhase(true);
+    upperController.setSensorPhase(true);
 
-    addChild("Shooter1(upper)", controller1);
-    addChild("Shooter2(lower)", controller2);
+    addChild("Shooter1(lower)", lowerController);
+    addChild("Shooter2(upper)", upperController);
 
     setupShuffleboard();
   }
@@ -72,7 +74,8 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     positions = new NetworkTableEntry[2];
 
     var tab = Shuffleboard.getTab(ShooterSubsystem.class.getSimpleName());
-    setpoint = tab.add("setpoint",18000).getEntry();
+    lowerSetpoint = tab.add("lowerSetpoint",20000).getEntry();
+    upperSetpoint = tab.add("upperSetpoint",16000).getEntry();
     enableTelem = tab.add("enable telem", true)
                      .withWidget(BuiltInWidgets.kToggleButton)
                      .getEntry();
@@ -82,37 +85,37 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     tab.add(new ShooterVelocityControl(this));
 
     var velsContainer = tab.getLayout("velocity", BuiltInLayouts.kList);
-    vels[0] = velsContainer.add("upper(1)", 0.0).getEntry();
-    vels[1] = velsContainer.add("lower(2)", 0.0).getEntry();
+    vels[0] = velsContainer.add("lower(1)", 0.0).getEntry();
+    vels[1] = velsContainer.add("upper(2)", 0.0).getEntry();
 
     var controllersContainer = tab.getLayout("controllers", BuiltInLayouts.kList);
-    controllersContainer.add(controller1);
-    controllersContainer.add(controller2);
+    controllersContainer.add(lowerController);
+    controllersContainer.add(upperController);
 
     var outsContainer = tab.getLayout("outputs", BuiltInLayouts.kList);
-    outs[0] = outsContainer.add("upper", 0.0).getEntry();
-    outs[1] = outsContainer.add("lower", 0.0).getEntry();
+    outs[0] = outsContainer.add("lower", 0.0).getEntry();
+    outs[1] = outsContainer.add("upper", 0.0).getEntry();
 
     var posContainer = tab.getLayout("positions", BuiltInLayouts.kList);
-    positions[0] = posContainer.add("upper", 0.0).getEntry();
-    positions[1] = posContainer.add("lower", 0.0).getEntry();
+    positions[0] = posContainer.add("lower", 0.0).getEntry();
+    positions[1] = posContainer.add("upper", 0.0).getEntry();
 
   }
 
   public double getLowerEncoderPosition() {
-    return controller1.getSelectedSensorPosition();
+    return lowerController.getSelectedSensorPosition();
   }
 
   public double getLowerEncoderVelocity() {
-    return controller1.getSelectedSensorVelocity();
+    return lowerController.getSelectedSensorVelocity();
   }
 
   public double getUpperEncoderPosition() {
-    return controller2.getSelectedSensorPosition();
+    return upperController.getSelectedSensorPosition();
   }
 
   public double getUpperEncoderVelocity() {
-    return controller2.getSelectedSensorVelocity();
+    return upperController.getSelectedSensorVelocity();
   }
 
   @Override
@@ -120,26 +123,30 @@ public class ShooterSubsystem extends SubsystemBase implements SensorReset {
     if (enableTelem != null && enableTelem.getBoolean(true)) {
       vels[0].setDouble(getUpperEncoderVelocity());
       vels[1].setDouble(getLowerEncoderVelocity());
-      outs[0].setDouble(controller1.getMotorOutputPercent());
-      outs[1].setDouble(controller2.getMotorOutputPercent());
+      outs[0].setDouble(lowerController.getMotorOutputPercent());
+      outs[1].setDouble(upperController.getMotorOutputPercent());
       positions[0].setDouble(getUpperEncoderPosition());
       positions[1].setDouble(getLowerEncoderPosition());
     }
   }
 
   public void runShooter(double amt) {
-    controller1.set(amt);
-    controller2.set(amt);
+    lowerController.set(ControlMode.Velocity, 20000);
+    upperController.set(ControlMode.Velocity, 16000);
     out = amt;
   }
 
   public boolean isEnabled() {
-    return controller1.get() != 0.0;
+    return lowerController.get() != 0.0;
+  }
+
+  public boolean isSpunUp() {
+    return upperController.getSelectedSensorVelocity() >= 17500;
   }
 
   @Override
   public void resetSensors() {
-    for (var c : List.of(controller1, controller2)) {
+    for (var c : List.of(lowerController, upperController)) {
       ErrorCode errorCode = c.getSensorCollection().setQuadraturePosition(0, Constants.TalonConstants.DEFAULT_TIMEOUT);
       if (errorCode != ErrorCode.OK) {
         DriverStation.reportError("Problem reseting " + c.getName() + " in subsystem " + getSubsystem(), false);
