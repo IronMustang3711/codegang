@@ -161,6 +161,14 @@ public class HookSubsystem extends PIDSubsystem implements SensorReset {
     return hookController.getSelectedSensorPosition();
   }
 
+  public boolean isDoneUp() {
+    return hookController.getSelectedSensorPosition() >= 1550;
+  }
+
+  public boolean isDoneDown() {
+    return hookController.getSelectedSensorPosition() <= -50;
+  }
+
   @Override
   public void resetSensors() {
     ErrorCode errorCode = hookController.getSensorCollection().setQuadraturePosition(0, TalonConstants.DEFAULT_TIMEOUT);

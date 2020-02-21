@@ -23,7 +23,7 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver {
 
     var infeedHalfSpeed = new RunInfeedPercentOutput(infeedSubsystem, 0.4);
     var feedworksCmd = new RunFeedworksPercentOutput(feedworks, 0.5, 0.4);
-    Command infeedAndFeedworks = new ParallelCommandGroup(infeedHalfSpeed, feedworksCmd).withTimeout(0.8);
+    Command infeedAndFeedworks = new ParallelCommandGroup(infeedHalfSpeed, feedworksCmd).withTimeout(1.0);
     if (prevInfeedCommand != null)
       infeedAndFeedworks = infeedAndFeedworks.andThen(new ScheduleCommand(prevInfeedCommand));
 
