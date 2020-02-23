@@ -18,7 +18,7 @@ import frc.robot.stuff.TalonFaultsReporter;
 public class IntakeSubsystem extends SubsystemBase implements SensorReset {
   private WPI_TalonSRX controller = new WPI_TalonSRX(15);
   DigitalInput photoEye;
-  boolean photoeyeBlocked = false;
+  boolean photoeye1Blocked = false;
 
   public InfeedPhotoeyeObserver photoeyeObserver;
 
@@ -33,19 +33,19 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
 
   @Override
   public void periodic() {
-    var oldVal = photoeyeBlocked;
-    var newVal = photoeyeBlocked = photoEye.get();
+    var oldVal = photoeye1Blocked;
+    var newVal = photoeye1Blocked = photoEye.get();
     if (photoeyeObserver != null) {
       if (oldVal && !newVal)
-        photoeyeObserver.onPhotoeyeUnblocked();
+        photoeyeObserver.onPhotoeye1Unblocked();
 
       else if (!oldVal && newVal){
-        photoeyeObserver.onPhotoeyeBlocked();
+        photoeyeObserver.onPhotoeye1Blocked();
     }
   }
 }
 
-  public boolean photoeyeBlocked() {
+  public boolean photoeye1Blocked() {
     return photoEye.get();
   }
 
@@ -55,7 +55,7 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     tab.addNumber("controller_current", controller::getStatorCurrent);
     tab.addNumber("position", this::getEncoderPosition);
     tab.addNumber("velocity", this::getEncoderVelocity);
-    tab.addBoolean("photoeye blocked", this::photoeyeBlocked);
+    tab.addBoolean("photoeye blocked", this::photoeye1Blocked);
     tab.add(new ResetSensors<>(this));
     tab.addString("current command", ()-> Objects.toString(getCurrentCommand()));
 

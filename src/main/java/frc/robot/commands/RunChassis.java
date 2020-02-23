@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ChassisSubsystem;
 
@@ -11,7 +12,7 @@ public class RunChassis extends CommandBase{
     }
     @Override
     public void execute() {
-        chassis.arcadeDrive(0.5, 0.0);
+        chassis.arcadeDrive(-0.8, 0.0);
     }
     @Override
     public void end(boolean interrupted) {

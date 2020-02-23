@@ -47,7 +47,7 @@ public class RobotContainer {
     // intake.photoeyeObserver = autoFeed;
 
 
-    feedworksSequencer = new WaitUntilCommand(intake::photoeyeBlocked)
+    feedworksSequencer = new WaitUntilCommand(intake::photoeye1Blocked)
                            .andThen(new RunInfeedPercentOutput(intake, 0.5)
                                       .alongWith(new RunFeedworksPercentOutput(feedworks, 1.0))
                                       .withTimeout(0.5));
@@ -122,7 +122,24 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new RunChassis(chassis).withTimeout(2.0);
+    var shootSequence = new ParallelCommandGroup(
+      // new RunShooterPercentOutput(shooter, this::shooterOutput),
+      new ShooterVelocityControl(shooter),
+      new SequentialCommandGroup(
+        new ParallelCommandGroup(
+          new InstantCommand(() -> {
+            intake.enableIntake(false);
+            feedworks.setMotorOutputs(0.0);
+          }, intake, feedworks),
+          new WaitCommand(1.0)),
+        new ParallelCommandGroup(new RunFeedworksPercentOutput(feedworks, 1.0),
+                                 new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
+
+    var shootNScoot = new SequentialCommandGroup(
+      shootSequence.withTimeout(3.0),
+      new WaitCommand(0.5),
+      new RunChassis(chassis).withTimeout(1.0));
+      return shootNScoot;
   }
 
   public void testInit() {

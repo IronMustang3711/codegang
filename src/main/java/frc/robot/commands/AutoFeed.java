@@ -40,7 +40,7 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver {
   }
 
   @Override
-  public void onPhotoeyeBlocked() {
+  public void onPhotoeye1Blocked() {
     prevInfeedCommand = infeedSubsystem.getCurrentCommand();
     if (prevInfeedCommand != null) prevInfeedCommand.cancel();
     autoFeedCommand = createAutoFeedCommandSequence();
@@ -48,23 +48,23 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver {
   }
 
   @Override
-  public void onPhotoeyeUnblocked() {
+  public void onPhotoeye1Unblocked() {
     assert (autoFeedCommand != null);
     double elapsed = CommandScheduler.getInstance().timeSinceScheduled(autoFeedCommand);
     if (elapsed != -1.0)
-      DriverStation.reportWarning("photoeye unblocked " + elapsed + "s after autofeed start", false);
+      DriverStation.reportWarning("photoeye 1 unblocked " + elapsed + "s after autofeed start", false);
   }
 
-  boolean photoeyeBlocked = false;
+  boolean photoeye1Blocked = false;
 
   @Override
   public void execute() {
-    var prev = photoeyeBlocked;
-    var cur = photoeyeBlocked = infeedSubsystem.photoeyeBlocked();
+    var prev = photoeye1Blocked;
+    var cur = photoeye1Blocked = infeedSubsystem.photoeye1Blocked();
     if (!prev && cur) {
-      onPhotoeyeBlocked();
+      onPhotoeye1Blocked();
     } else if (prev && !cur) {
-      onPhotoeyeUnblocked();
+      onPhotoeye1Unblocked();
     }
   }
 
