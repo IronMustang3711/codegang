@@ -13,14 +13,18 @@ import frc.robot.Constants;
 import frc.robot.commands.ResetSensors;
 import frc.robot.stuff.InfeedPhotoeyeObserver;
 import frc.robot.stuff.SensorReset;
+import frc.robot.stuff.ShooterPhotoeyeObserver;
 import frc.robot.stuff.TalonFaultsReporter;
 
 public class IntakeSubsystem extends SubsystemBase implements SensorReset {
   private WPI_TalonSRX controller = new WPI_TalonSRX(15);
   DigitalInput photoEye;
+  DigitalInput photoEye2;
   boolean photoeye1Blocked = false;
+  boolean photoeye2Blocked = false;
 
-  public InfeedPhotoeyeObserver photoeyeObserver;
+  public InfeedPhotoeyeObserver infeedPhotoeyeObserver;
+  public ShooterPhotoeyeObserver shooterPhotoeyeObserver;
 
   public IntakeSubsystem() {
     addChild("intakeController", controller);
@@ -28,6 +32,7 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     controller.configFactoryDefault();
     controller.setSafetyEnabled(false);
     photoEye = new DigitalInput(0);
+    photoEye2 = new DigitalInput(1);
     setupShuffleboard();
   }
 
@@ -35,18 +40,33 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
   public void periodic() {
     var oldVal = photoeye1Blocked;
     var newVal = photoeye1Blocked = photoEye.get();
-    if (photoeyeObserver != null) {
+    if (infeedPhotoeyeObserver != null) {
       if (oldVal && !newVal)
-        photoeyeObserver.onPhotoeye1Unblocked();
+        infeedPhotoeyeObserver.onPhotoeye1Unblocked();
 
       else if (!oldVal && newVal){
-        photoeyeObserver.onPhotoeye1Blocked();
+        infeedPhotoeyeObserver.onPhotoeye1Blocked();
     }
   }
+
+  var oldVal2 = photoeye2Blocked;
+  var newVal2 = photoeye2Blocked = photoEye2.get();
+  if (shooterPhotoeyeObserver != null) {
+    if (oldVal2 && !newVal2)
+      shooterPhotoeyeObserver.onPhotoeye2Unblocked();
+
+    else if (!oldVal && newVal){
+      shooterPhotoeyeObserver.onPhotoeye2Blocked();
+  }
+}
 }
 
   public boolean photoeye1Blocked() {
     return photoEye.get();
+  }
+
+  public boolean photoeye2Blocked() {
+    return photoEye2.get();
   }
 
   private void setupShuffleboard() {
@@ -55,7 +75,8 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     tab.addNumber("controller_current", controller::getStatorCurrent);
     tab.addNumber("position", this::getEncoderPosition);
     tab.addNumber("velocity", this::getEncoderVelocity);
-    tab.addBoolean("photoeye blocked", this::photoeye1Blocked);
+    tab.addBoolean("photoeye 1 blocked", this::photoeye1Blocked);
+    tab.addBoolean("photoeye 2 blocked", this::photoeye2Blocked);
     tab.add(new ResetSensors<>(this));
     tab.addString("current command", ()-> Objects.toString(getCurrentCommand()));
 
