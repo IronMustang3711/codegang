@@ -11,20 +11,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.ResetSensors;
-import frc.robot.stuff.InfeedPhotoeyeObserver;
 import frc.robot.stuff.SensorReset;
-import frc.robot.stuff.ShooterPhotoeyeObserver;
 import frc.robot.stuff.TalonFaultsReporter;
 
 public class IntakeSubsystem extends SubsystemBase implements SensorReset {
   private WPI_TalonSRX controller = new WPI_TalonSRX(15);
   DigitalInput photoEye;
+  //TODO: perhaps it might be better to put this in the FeederSubsystem?
   DigitalInput photoEye2;
-  boolean photoeye1Blocked = false;
-  boolean photoeye2Blocked = false;
 
-  public InfeedPhotoeyeObserver infeedPhotoeyeObserver;
-  public ShooterPhotoeyeObserver shooterPhotoeyeObserver;
 
   public IntakeSubsystem() {
     addChild("intakeController", controller);
@@ -38,27 +33,9 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
 
   @Override
   public void periodic() {
-    var oldVal = photoeye1Blocked;
-    var newVal = photoeye1Blocked = photoEye.get();
-    if (infeedPhotoeyeObserver != null) {
-      if (oldVal && !newVal)
-        infeedPhotoeyeObserver.onPhotoeye1Unblocked();
 
-      else if (!oldVal && newVal){
-        infeedPhotoeyeObserver.onPhotoeye1Blocked();
-    }
   }
 
-  // var oldVal2 = photoeye2Blocked;
-  // var newVal2 = photoeye2Blocked = photoEye2.get();
-  // if (shooterPhotoeyeObserver != null) {
-  //   if (oldVal2 && !newVal2)
-  //     shooterPhotoeyeObserver.onPhotoeye2Unblocked();
-
-  //   else if (!oldVal && newVal){
-  //     shooterPhotoeyeObserver.onPhotoeye2Blocked();
-  // }
-}
 
 
   public boolean photoeye1Blocked() {
@@ -76,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     tab.addNumber("position", this::getEncoderPosition);
     tab.addNumber("velocity", this::getEncoderVelocity);
     tab.addBoolean("photoeye 1 blocked", this::photoeye1Blocked);
-    //tab.addBoolean("photoeye 2 blocked", this::photoeye2Blocked);
+    tab.addBoolean("photoeye 2 blocked", this::photoeye2Blocked);
     tab.add(new ResetSensors<>(this));
     tab.addString("current command", ()-> Objects.toString(getCurrentCommand()));
 
@@ -114,7 +91,7 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     if (errorCode != ErrorCode.OK) {
       DriverStation.reportError("error resetting encoders for subsystem " + IntakeSubsystem.class.getSimpleName(),
                                 false);
-      //TODO ef we get here, try again?
+      //TODO if we get here, try again?
     }
   }
 }
