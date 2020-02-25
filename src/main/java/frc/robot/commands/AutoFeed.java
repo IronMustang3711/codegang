@@ -31,14 +31,16 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver, Sho
     if (prevInfeedCommand != null)
       infeedAndFeedworks = infeedAndFeedworks.andThen(new ScheduleCommand(prevInfeedCommand));
 
-    Command reducedInfeed = infeedHalfSpeed2.withTimeout(0.5);
-    if (photoeye2Blocked) {
-      return reducedInfeed;
-    } else if (!photoeye2Blocked) {
+    // Command reducedInfeed = infeedHalfSpeed2.withTimeout(0.5);
+    // if (photoeye2Blocked) {
+    //   return reducedInfeed;
+    // } 
+    // else if (!photoeye2Blocked) {
       return infeedAndFeedworks;
-    } else {
-      return new RunInfeedPercentOutput(infeedSubsystem, 0.0);
-    }
+    // } 
+    // else {
+    //   return new RunInfeedPercentOutput(infeedSubsystem, 0.0);
+    // }
   }
 
   Command createAutoFeedCommandSequence2() {
@@ -54,6 +56,7 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver, Sho
   Command createAutoFeedCommandSequence3() {
     var slowInfeed = new RunInfeedPercentOutput(infeedSubsystem, 1.0);
     BooleanSupplier y = () -> photoeye1Blocked = true;
+    
     Command cmd2 = slowInfeed.withInterrupt(y);
     return cmd2;
   }
@@ -75,13 +78,13 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver, Sho
       DriverStation.reportWarning("photoeye 1 unblocked " + elapsed + "s after autofeed start", false);
   }
 
-
-  //Something in here causes the feeder to stop for a moment when shooting, which is no bueno
+ /*
   @Override
   public void onPhotoeye2Blocked() {
     prevInfeedCommand = infeedSubsystem.getCurrentCommand();
-    if (prevInfeedCommand != null)
-      prevInfeedCommand.cancel();
+     if (prevInfeedCommand != null)
+     //This bad boy right here is causing the feeder to stop during the shoot sequence
+       prevInfeedCommand.cancel();
     autoFeedCommand = createAutoFeedCommandSequence3();
     autoFeedCommand.schedule();
   }
@@ -93,9 +96,10 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver, Sho
     if (elapsed != -1.0)
       DriverStation.reportWarning("photoeye 2 unblocked " + elapsed + "s after autofeed start", false);
   }
+ */
 
   boolean photoeye1Blocked = false;
-  boolean photoeye2Blocked = false;
+  //boolean photoeye2Blocked = false;
 
   @Override
   public void execute() {
@@ -106,7 +110,7 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver, Sho
     } else if (prev && !cur) {
       onPhotoeye1Unblocked();
     }
-
+    /*
     var prev2 = photoeye2Blocked;
     var cur2 = photoeye2Blocked = infeedSubsystem.photoeye2Blocked();
     if (!prev2 && cur2) {
@@ -114,7 +118,7 @@ public class AutoFeed extends CommandBase implements InfeedPhotoeyeObserver, Sho
     } else if (prev2 && !cur2) {
       onPhotoeye2Unblocked();
     }
-
+    */
   }
 
   @Override

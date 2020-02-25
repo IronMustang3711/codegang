@@ -49,17 +49,17 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     }
   }
 
-  var oldVal2 = photoeye2Blocked;
-  var newVal2 = photoeye2Blocked = photoEye2.get();
-  if (shooterPhotoeyeObserver != null) {
-    if (oldVal2 && !newVal2)
-      shooterPhotoeyeObserver.onPhotoeye2Unblocked();
+  // var oldVal2 = photoeye2Blocked;
+  // var newVal2 = photoeye2Blocked = photoEye2.get();
+  // if (shooterPhotoeyeObserver != null) {
+  //   if (oldVal2 && !newVal2)
+  //     shooterPhotoeyeObserver.onPhotoeye2Unblocked();
 
-    else if (!oldVal && newVal){
-      shooterPhotoeyeObserver.onPhotoeye2Blocked();
-  }
+  //   else if (!oldVal && newVal){
+  //     shooterPhotoeyeObserver.onPhotoeye2Blocked();
+  // }
 }
-}
+
 
   public boolean photoeye1Blocked() {
     return photoEye.get();
@@ -76,7 +76,7 @@ public class IntakeSubsystem extends SubsystemBase implements SensorReset {
     tab.addNumber("position", this::getEncoderPosition);
     tab.addNumber("velocity", this::getEncoderVelocity);
     tab.addBoolean("photoeye 1 blocked", this::photoeye1Blocked);
-    tab.addBoolean("photoeye 2 blocked", this::photoeye2Blocked);
+    //tab.addBoolean("photoeye 2 blocked", this::photoeye2Blocked);
     tab.add(new ResetSensors<>(this));
     tab.addString("current command", ()-> Objects.toString(getCurrentCommand()));
 

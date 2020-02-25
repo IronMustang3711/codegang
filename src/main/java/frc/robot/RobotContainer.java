@@ -78,6 +78,7 @@ public class RobotContainer {
 
     new JoystickButton(joy, 2).whileHeld(new RunFeedworksPercentOutput(feedworks, 1.0));
 
+    Command prevInfeedCommand;
     var shootSequence = new ParallelCommandGroup(
       // new RunShooterPercentOutput(shooter, this::shooterOutput),
       new ShooterVelocityControl(shooter),
@@ -92,7 +93,7 @@ public class RobotContainer {
                                  new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
 
     shootSequence.setName("shoot_sequence");
-
+    
     new JoystickButton(joy, 1).whileHeld(shootSequence);
     new JoystickButton(joy, 4).whileHeld(new RunHookPercentOutput(hook, -0.5));
     //new JoystickButton(joy, 4).whileHeld(

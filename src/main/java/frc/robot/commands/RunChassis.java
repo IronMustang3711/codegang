@@ -9,10 +9,11 @@ public class RunChassis extends CommandBase{
 
     public RunChassis(ChassisSubsystem chassis){
         this.chassis = chassis;
+        addRequirements(chassis);
     }
     @Override
     public void execute() {
-        chassis.arcadeDrive(-0.8, 0.0);
+        chassis.arcadeDrive(-0.5, 0.0);
     }
     @Override
     public void end(boolean interrupted) {
