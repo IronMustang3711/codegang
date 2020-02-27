@@ -93,7 +93,7 @@ public class RobotContainer {
                                  new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
 
     shootSequence.setName("shoot_sequence");
-
+    
     new JoystickButton(joy, 1).whileHeld(shootSequence);
     new JoystickButton(joy, 4).whileHeld(new RunHookPercentOutput(hook, -0.5));
     //new JoystickButton(joy, 4).whileHeld(
@@ -139,8 +139,8 @@ public class RobotContainer {
     var shootNScoot = new SequentialCommandGroup(
       shootSequence.withTimeout(3.0),
       new WaitCommand(0.5),
-      new RunChassis(chassis).withTimeout(1.5));
-    return shootNScoot;
+      new RunChassis(chassis).withTimeout(2.0));
+      return shootNScoot;
   }
 
   public void testInit() {
