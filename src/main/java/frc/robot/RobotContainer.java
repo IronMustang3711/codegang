@@ -78,7 +78,21 @@ public class RobotContainer {
 
     new JoystickButton(joy, 2).whileHeld(new RunFeedworksPercentOutput(feedworks, 1.0));
 
-    var shootSequence = ShootSequence.createShootSequence(shooter,intake, feedworks);
+    Command prevInfeedCommand;
+    var shootSequence = new ParallelCommandGroup(
+      // new RunShooterPercentOutput(shooter, this::shooterOutput),
+      new ShooterVelocityControl(shooter),
+      new SequentialCommandGroup(
+        new ParallelCommandGroup(
+          new InstantCommand(() -> {
+            intake.enableIntake(false);
+            feedworks.setMotorOutputs(0.0);
+          }, intake, feedworks),
+          new WaitCommand(1.0)),
+        new ParallelCommandGroup(new RunFeedworksPercentOutput(feedworks, 1.0),
+                                 new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
+
+    shootSequence.setName("shoot_sequence");
 
     new JoystickButton(joy, 1).whileHeld(shootSequence);
     new JoystickButton(joy, 4).whileHeld(new RunHookPercentOutput(hook, -0.5));
@@ -109,13 +123,24 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    var shootSequence = ShootSequence.createShootSequence(shooter,intake, feedworks);
+    var shootSequence = new ParallelCommandGroup(
+      // new RunShooterPercentOutput(shooter, this::shooterOutput),
+      new ShooterVelocityControl(shooter),
+      new SequentialCommandGroup(
+        new ParallelCommandGroup(
+          new InstantCommand(() -> {
+            intake.enableIntake(false);
+            feedworks.setMotorOutputs(0.0);
+          }, intake, feedworks),
+          new WaitCommand(1.0)),
+        new ParallelCommandGroup(new RunFeedworksPercentOutput(feedworks, 1.0),
+                                 new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
 
     var shootNScoot = new SequentialCommandGroup(
       shootSequence.withTimeout(3.0),
       new WaitCommand(0.5),
       new RunChassis(chassis).withTimeout(1.5));
-      return shootNScoot;
+    return shootNScoot;
   }
 
   public void testInit() {
