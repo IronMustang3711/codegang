@@ -114,7 +114,7 @@ public class RobotContainer {
     var shootNScoot = new SequentialCommandGroup(
       shootSequence.withTimeout(3.0),
       new WaitCommand(0.5),
-      new RunChassis(chassis).withTimeout(1.0));
+      new RunChassis(chassis).withTimeout(1.5));
       return shootNScoot;
   }
 
@@ -125,5 +125,11 @@ public class RobotContainer {
     var cmd = new StartEndCommand(init, end, chassis);
     cmd.schedule();
 
+  }
+
+  public void disabledInit() {
+    var winchCmd = winch.getCurrentCommand();
+    if (winchCmd != null)
+      winchCmd.cancel();
   }
 }
