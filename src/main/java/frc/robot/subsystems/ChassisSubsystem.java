@@ -28,8 +28,6 @@ public class ChassisSubsystem extends SubsystemBase implements SensorReset {
   // private DifferentialDrive drive;
 
   final List<WPI_TalonSRX> talons = List.of(leftFront, leftRear, rightFront, rightRear);
-  AHRS ahrs;
-  ADXRS450_Gyro gyro;
 
   PigeonIMU pigeon;
 
@@ -40,8 +38,6 @@ public class ChassisSubsystem extends SubsystemBase implements SensorReset {
 //    drive = new DifferentialDrive(new SpeedControllerGroup(leftFront, leftRear),
 //                                  new SpeedControllerGroup(rightFront, rightRear));
 
-    ahrs = new AHRS(SPI.Port.kMXP);
-    gyro = new ADXRS450_Gyro();
 
     pigeon = new PigeonIMU(rightRear);
 
@@ -49,9 +45,7 @@ public class ChassisSubsystem extends SubsystemBase implements SensorReset {
     addChild("left2", leftRear);
     addChild("right1", rightFront);
     addChild("right2", rightRear);
-    // addChild("drive", drive); //TODO: remove the above lines if controllers get added twice
-    addChild("navx/ahrs", ahrs);
-    addChild("gyro", gyro);
+
 
 //    drive.setExpiration(0.5);
 //    drive.setMaxOutput(1.0);
@@ -132,8 +126,7 @@ public class ChassisSubsystem extends SubsystemBase implements SensorReset {
     tab.add(leftRear);
     tab.add(rightFront);
     tab.add(rightRear);
-    tab.add(ahrs);
-    tab.add(gyro);
+
 
     tab.addNumber("pigeonHeading", pigeon::getFusedHeading);
     // tab.addDoubleArray("headings", () -> new double[]{ahrs.getAngle(), gyro.getAngle()});
@@ -249,8 +242,6 @@ public class ChassisSubsystem extends SubsystemBase implements SensorReset {
       }
     }
 
-    gyro.reset();
-    ahrs.reset();
     pigeon.setFusedHeading(0.0, 50);
 
   }
