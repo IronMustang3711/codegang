@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.subsystems.FeederSubsystem;
@@ -41,23 +39,23 @@ public class AutoFeed extends CommandBase  {
     // }
   }
 
-  Command createAutoFeedCommandSequence2() {
-    var slowInfeed = new RunInfeedPercentOutput(infeedSubsystem, 0.4).withTimeout(0.8);
-    var feeder1 = RunFeedworksPercentOutput.runFirstFeeder(feedworks, 0.5).withTimeout(0.8);
-    var feeder2 = RunFeedworksPercentOutput.runSecondFeeder(feedworks, 0.6).withTimeout(0.4);
-    Command cmd = slowInfeed.alongWith(feeder1).alongWith(feeder2);
-    if (prevInfeedCommand != null)
-      cmd = cmd.andThen(new ScheduleCommand(prevInfeedCommand));
-    return cmd;
-  }
+  // Command createAutoFeedCommandSequence2() {
+  //   var slowInfeed = new RunInfeedPercentOutput(infeedSubsystem, 0.4).withTimeout(0.8);
+  //   var feeder1 = RunFeedworksPercentOutput.runFirstFeeder(feedworks, 0.5).withTimeout(0.8);
+  //   var feeder2 = RunFeedworksPercentOutput.runSecondFeeder(feedworks, 0.6).withTimeout(0.4);
+  //   Command cmd = slowInfeed.alongWith(feeder1).alongWith(feeder2);
+  //   if (prevInfeedCommand != null)
+  //     cmd = cmd.andThen(new ScheduleCommand(prevInfeedCommand));
+  //   return cmd;
+  // }
 
-  Command createAutoFeedCommandSequence3() {
-    var slowInfeed = new RunInfeedPercentOutput(infeedSubsystem, 1.0);
-    BooleanSupplier y = () -> photoeye1Blocked = true;
+  // Command createAutoFeedCommandSequence3() {
+  //   var slowInfeed = new RunInfeedPercentOutput(infeedSubsystem, 1.0);
+  //   BooleanSupplier y = () -> photoeye1Blocked = true;
     
-    Command cmd2 = slowInfeed.withInterrupt(y);
-    return cmd2;
-  }
+  //   Command cmd2 = slowInfeed.withInterrupt(y);
+  //   return cmd2;
+  // }
 
 
   public void infeedPhotoEye1Blocked() {
@@ -127,6 +125,9 @@ public class AutoFeed extends CommandBase  {
   }
 
   private void infeedPhotoEye2Blocked() {
+    //1.) dont run feeder
+    //2.) run intake until photoeye 1 blocked.
+    //3.) Queue is full. stop everything.
   }
 
   @Override
