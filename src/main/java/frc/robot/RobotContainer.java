@@ -78,27 +78,9 @@ public class RobotContainer {
 
     new JoystickButton(joy, 2).whileHeld(new RunFeedworksPercentOutput(feedworks, 1.0));
 
-    Command prevInfeedCommand;
-    var shootSequence = new ParallelCommandGroup(
-      // new RunShooterPercentOutput(shooter, this::shooterOutput),
-      new ShooterVelocityControl(shooter),
-      new SequentialCommandGroup(
-        new ParallelCommandGroup(
-          new InstantCommand(() -> {
-            intake.enableIntake(false);
-            feedworks.setMotorOutputs(0.0);
-          }, intake, feedworks),
-          new WaitCommand(1.0)),
-        new ParallelCommandGroup(new RunFeedworksPercentOutput(feedworks, 1.0),
-                                 new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
-
-    shootSequence.setName("shoot_sequence");
-    
-    new JoystickButton(joy, 1).whileHeld(shootSequence);
+    new JoystickButton(joy, 1).whileHeld(ShootSequence.createShootSequence(intake, feedworks, shooter));
     new JoystickButton(joy, 4).whileHeld(new RunHookPercentOutput(hook, -0.5));
-    //new JoystickButton(joy, 4).whileHeld(
-    //   new StartEndCommand(
-    // )
+
     new JoystickButton(joy, 6).whileHeld(new RunHookPercentOutput(hook, 0.5));
     new JoystickButton(joy, 7).whileHeld(winch::winchForward).whenReleased(winch::winchDisable);
     new JoystickButton(joy, 8).whileHeld(winch::winchReverse).whenReleased(winch::winchDisable);
@@ -117,24 +99,14 @@ public class RobotContainer {
 
   }
 
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    var shootSequence = new ParallelCommandGroup(
-      // new RunShooterPercentOutput(shooter, this::shooterOutput),
-      new ShooterVelocityControl(shooter),
-      new SequentialCommandGroup(
-        new ParallelCommandGroup(
-          new InstantCommand(() -> {
-            intake.enableIntake(false);
-            feedworks.setMotorOutputs(0.0);
-          }, intake, feedworks),
-          new WaitCommand(1.0)),
-        new ParallelCommandGroup(new RunFeedworksPercentOutput(feedworks, 1.0),
-                                 new WaitCommand(0.3).andThen(new RunInfeedPercentOutput(intake, 0.5)))));
+    var shootSequence = ShootSequence.createShootSequence(intake, feedworks, shooter);
 
     var shootNScoot = new SequentialCommandGroup(
       shootSequence.withTimeout(3.0),
