@@ -95,7 +95,7 @@ public class RobotContainer {
     new JoystickButton(joy, 5).whileHeld(new StartEndCommand(pizzaWheel::runSpinner, pizzaWheel::stopSpinner, pizzaWheel));
 
     new JoystickButton(joy, 9).whileHeld(new RunInfeedPercentOutput(intake, -1.0)
-                                           .alongWith(new RunFeedworksPercentOutput(feedworks, -1.0)));
+                                           .alongWith(new RunFeedworksPercentOutput(feedworks, -1.0, 0.0)));
 
   }
 
