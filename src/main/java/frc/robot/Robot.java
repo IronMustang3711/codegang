@@ -29,6 +29,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   private long lastUpdateTime;
+  boolean wasAuto = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -38,6 +39,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_robotContainer = new RobotContainer();
     lastUpdateTime = System.nanoTime();
+    wasAuto = false;
   }
 
   /**
@@ -67,7 +69,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    Shuffleboard.stopRecording();
+    if(!wasAuto)
+      Shuffleboard.stopRecording();
+      
     m_robotContainer.disabledInit();
   }
 
@@ -82,6 +86,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     Shuffleboard.startRecording();
     CommandScheduler.getInstance().enable();
+    wasAuto = true;
 
    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -100,7 +105,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    Shuffleboard.startRecording();
+    
+    wasAuto = false;
+    //Shuffleboard.startRecording();
     CommandScheduler.getInstance().enable();
 
     // This makes sure that the autonomous stops running when
@@ -121,6 +128,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    wasAuto = false;
     m_robotContainer.testInit(); //TODO: this was never called on monday
     CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().run();
