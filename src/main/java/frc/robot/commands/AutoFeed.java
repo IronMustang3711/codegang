@@ -21,8 +21,8 @@ public class AutoFeed extends CommandBase  {
   Command createAutoFeedCommandSequence() {
 
     var infeedHalfSpeed = new RunInfeedPercentOutput(infeedSubsystem, 0.4);
-    var feedworksCmd = new RunFeedworksPercentOutput(feedworks, 0.5, 0.4);
-    Command infeedAndFeedworks = new ParallelCommandGroup(infeedHalfSpeed, feedworksCmd).withTimeout(1.0);
+    var feedworksCmd = new RunFeedworksPercentOutput(feedworks, 0.4, 0.5);
+    Command infeedAndFeedworks = new ParallelCommandGroup(infeedHalfSpeed, feedworksCmd).withTimeout(1.1);
     //only restart the previous command if it was an instance of RunInfeedPercentOutput (e.g. not this or the shoot sequence)
     if (prevInfeedCommand != null && prevInfeedCommand instanceof RunInfeedPercentOutput)
       infeedAndFeedworks = infeedAndFeedworks.andThen(new ScheduleCommand(prevInfeedCommand));
