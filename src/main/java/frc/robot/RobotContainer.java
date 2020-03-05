@@ -28,7 +28,7 @@ public class RobotContainer {
 
   final List<SubsystemBase> subsystems = List.of(chassis, hook, intake, shooter, winch, feedworks, pizzaWheel);
 
-  private final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
+   final DriveWithJoystick driveWithJoystick = new DriveWithJoystick(chassis, joy);
 
   double shooterOutput() {
     return -joy.getThrottle() * 0.25 + 0.75;
@@ -76,7 +76,9 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new JoystickButton(joy, 10).toggleWhenActive(new RunInfeedPercentOutput(intake, 1.0));
 
-    new JoystickButton(joy, 2).whileHeld(new RunFeedworksPercentOutput(feedworks, 1.0));
+   // new JoystickButton(joy, 2).whileHeld(new RunFeedworksPercentOutput(feedworks, 1.0));
+   new JoystickButton(joy,2).whenPressed(()->driveWithJoystick.enableMaxSpeed(true))
+                            .whenReleased(()->driveWithJoystick.enableMaxSpeed(false));
 
     new JoystickButton(joy, 1).whileHeld(ShootSequence.createShootSequence(intake, feedworks, shooter));
     new JoystickButton(joy, 4).whileHeld(new RunHookPercentOutput(hook, -0.5));

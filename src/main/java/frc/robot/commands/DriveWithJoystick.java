@@ -1,15 +1,26 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.SlewRateLimiter;
 import frc.robot.subsystems.ChassisSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-
 public class DriveWithJoystick extends CommandBase {
   private final ChassisSubsystem chassis;
   private Joystick joy;
+  private static final double DEFAULT_FWD = 0.8;
+  private static final double DEFAULT_ROT = 0.9;
+  private double fwdMultiplier = DEFAULT_FWD;
+  private double rotateMultiplier = DEFAULT_ROT;
 
+  public void enableMaxSpeed(boolean enable) {
+    if (enable) {
+      fwdMultiplier = 1.0;
+      rotateMultiplier = 1.0;
+    } else {
+      fwdMultiplier = DEFAULT_FWD;
+      rotateMultiplier = DEFAULT_ROT;
+    }
+  }
 
   public DriveWithJoystick(ChassisSubsystem subsystem, Joystick joy) {
     this.chassis = subsystem;
@@ -26,9 +37,9 @@ public class DriveWithJoystick extends CommandBase {
   @Override
   public void execute() {
     double fwd = joy.getY();
-    double rot = joy.getTwist() * -1.0; //TODO: verify that -1 makes sense.
-    double fwdOut = -0.8 * fwd;
-    double rotOut = -0.9 * rot;
+    double rot = joy.getTwist() * -1.0; 
+    double fwdOut = -fwdMultiplier * fwd;
+    double rotOut = -rotateMultiplier * rot;
     chassis.arcadeDrive(fwdOut, rotOut);
   }
 
